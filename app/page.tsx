@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Analytics } from "@vercel/analytics/next";
@@ -12,7 +12,6 @@ import {
   Menu,
   X,
   Maximize2,
-  CheckCircle2,
   Layers,
   Send,
   Sun,
@@ -24,6 +23,8 @@ import {
   FolderGit2,
   Wrench,
   Mail,
+  CheckCircle2,
+  Loader2,
 } from "lucide-react";
 import { FaLinkedinIn, FaGithub, FaTelegram, FaXTwitter } from "react-icons/fa6";
 
@@ -36,12 +37,12 @@ const PROFILE_DATA = {
   cvPath: "/zewdu_cv.pdf",
   avatar: "/profile0.jpg",
   socials: {
-    linkedin: "https://www.linkedin.com/in/zewdu-taye-54b1b8366?utm_source=share_via&utm_content=profile&utm_medium=member_android",
+    linkedin: "https://www.linkedin.com/in/zewdu-taye-54b1b8366",
     github: "https://github.com/Zewdutaye",
     telegram: "https://t.me/ZiDOscar123",
     twitter: "https://x.com",
   },
-};
+} as const;
 
 const NAV_ITEMS = [
   { id: "about", label: "ABOUT", icon: User },
@@ -69,7 +70,7 @@ const EXPERIENCES = [
     description:
       "Integrated Machine Learning models into cloud applications and built responsive frontend dashboards.",
   },
-];
+] as const;
 
 const SKILL_CATEGORIES = [
   {
@@ -87,7 +88,7 @@ const SKILL_CATEGORIES = [
     title: "DevOps & Cloud",
     skills: "Docker, Git, CI/CD Pipelines, PostgreSQL, Supabase, Vercel",
   },
-];
+] as const;
 
 const AWARDS = [
   {
@@ -100,7 +101,7 @@ const AWARDS = [
     organization: "Addis Developer Summit",
     year: "2024",
   },
-];
+] as const;
 
 export default function Portfolio() {
   const [activeTab, setActiveTab] = useState<NavTab>("about");
@@ -114,39 +115,130 @@ export default function Portfolio() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const mainContainerRef = useRef<HTMLDivElement | null>(null);
+  const isProgrammaticScroll = useRef(false);
+
   const galleryImages = useMemo(() => Array.from({ length: 8 }, (_, i) => `/${i + 1}.jpg`), []);
 
-  const scrollToSection = (id: NavTab) => {
+  // --- OPTIMIZED RIPPLE THEME TOGGLE WITH REQUESTANIMATIONFRAME ---
+  const toggleThemeWithRipple = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (typeof window === "undefined") return;
+
+      if ("vibrate" in navigator) {
+        navigator.vibrate(15);
+      }
+
+      const x = e.clientX;
+      const y = e.clientY;
+
+      const endRadius = Math.hypot(
+        Math.max(x, window.innerWidth - x),
+        Math.max(y, window.innerHeight - y)
+      );
+
+      const isTurningOff = darkMode;
+
+      if ("startViewTransition" in document) {
+        requestAnimationFrame(() => {
+          if (isTurningOff) {
+            document.documentElement.classList.add("theme-turning-off");
+          } else {
+            document.documentElement.classList.remove("theme-turning-off");
+          }
+
+          const transition = (
+            document as unknown as {
+              startViewTransition: (cb: () => void) => { ready: Promise<void> };
+            }
+          ).startViewTransition(() => {
+            setDarkMode((prev) => !prev);
+          });
+
+          transition.ready.then(() => {
+            requestAnimationFrame(() => {
+              const animation = document.documentElement.animate(
+                {
+                  clipPath: isTurningOff
+                    ? [
+                        `circle(${endRadius}px at ${x}px ${y}px)`,
+                        `circle(0px at ${x}px ${y}px)`,
+                      ]
+                    : [
+                        `circle(0px at ${x}px ${y}px)`,
+                        `circle(${endRadius}px at ${x}px ${y}px)`,
+                      ],
+                },
+                {
+                  duration: 500,
+                  easing: "ease-in-out",
+                  pseudoElement: isTurningOff
+                    ? "::view-transition-old(root)"
+                    : "::view-transition-new(root)",
+                }
+              );
+
+              animation.onfinish = () => {
+                document.documentElement.classList.remove("theme-turning-off");
+              };
+            });
+          });
+        });
+      } else {
+        requestAnimationFrame(() => {
+          setDarkMode((prev) => !prev);
+        });
+      }
+    },
+    [darkMode]
+  );
+
+  // --- PROGRAMMATIC SCROLLING TO PREVENT TAB FLICKER ---
+  const scrollToSection = useCallback((id: NavTab) => {
     setActiveTab(id);
     setMobileMenuOpen(false);
+    isProgrammaticScroll.current = true;
+
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
     }
-  };
 
-  // Lock body scroll on mobile menu open
+    // Release scroll guard after smooth scroll animation completes
+    setTimeout(() => {
+      isProgrammaticScroll.current = false;
+    }, 800);
+  }, []);
+
+  // Sync scroll lock for mobile menu
   useEffect(() => {
-    if (mobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
+    document.body.style.overflow = mobileMenuOpen ? "hidden" : "unset";
   }, [mobileMenuOpen]);
 
+  // --- ACCURATE INTERSECTION OBSERVER ---
   useEffect(() => {
-    const mainContainer = document.getElementById("main-content");
+    const mainContainer = mainContainerRef.current;
     if (!mainContainer) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
+        if (isProgrammaticScroll.current) return;
+
+        let maxRatio = 0;
+        let visibleSection: NavTab | null = null;
+
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveTab(entry.target.id as NavTab);
+          if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
+            maxRatio = entry.intersectionRatio;
+            visibleSection = entry.target.id as NavTab;
           }
         });
+
+        if (visibleSection) {
+          setActiveTab(visibleSection);
+        }
       },
-      { root: mainContainer, threshold: 0.25 }
+      { root: mainContainer, threshold: [0.2, 0.5, 0.8] }
     );
 
     NAV_ITEMS.forEach((item) => {
@@ -157,6 +249,31 @@ export default function Portfolio() {
     return () => observer.disconnect();
   }, []);
 
+  // --- GALLERY MODAL KEYBOARD NAVIGATION ---
+  const handleNextImage = useCallback(() => {
+    setSelectedImgIndex((prev) => (prev !== null ? (prev + 1) % galleryImages.length : null));
+  }, [galleryImages.length]);
+
+  const handlePrevImage = useCallback(() => {
+    setSelectedImgIndex((prev) =>
+      prev !== null ? (prev - 1 + galleryImages.length) % galleryImages.length : null
+    );
+  }, [galleryImages.length]);
+
+  useEffect(() => {
+    if (selectedImgIndex === null) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelectedImgIndex(null);
+      if (e.key === "ArrowLeft") handlePrevImage();
+      if (e.key === "ArrowRight") handleNextImage();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedImgIndex, handleNextImage, handlePrevImage]);
+
+  // --- FORM SUBMISSION ---
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -177,32 +294,11 @@ export default function Portfolio() {
         setTimeout(() => setFormSubmitted(false), 5000);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Form submission error:", err);
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  const handleNextImage = useCallback(() => {
-    setSelectedImgIndex((prev) => (prev !== null ? (prev + 1) % galleryImages.length : null));
-  }, [galleryImages.length]);
-
-  const handlePrevImage = useCallback(() => {
-    setSelectedImgIndex((prev) =>
-      prev !== null ? (prev - 1 + galleryImages.length) % galleryImages.length : null
-    );
-  }, [galleryImages.length]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (selectedImgIndex === null) return;
-      if (e.key === "Escape") setSelectedImgIndex(null);
-      if (e.key === "ArrowLeft") handlePrevImage();
-      if (e.key === "ArrowRight") handleNextImage();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedImgIndex, handleNextImage, handlePrevImage]);
 
   return (
     <div
@@ -214,7 +310,28 @@ export default function Portfolio() {
     >
       <Analytics />
 
-      {/* MOBILE APP HEADER (TOUCH OPTIMIZED) */}
+      {/* STATIC CSS FOR VIEW TRANSITION LAYER STACKING */}
+      <style global jsx>{`
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+          animation: none;
+          mix-blend-mode: normal;
+        }
+        ::view-transition-old(root) {
+          z-index: 1;
+        }
+        ::view-transition-new(root) {
+          z-index: 9999;
+        }
+        .theme-turning-off::view-transition-old(root) {
+          z-index: 9999;
+        }
+        .theme-turning-off::view-transition-new(root) {
+          z-index: 1;
+        }
+      `}</style>
+
+      {/* MOBILE APP HEADER */}
       <header
         className={`md:hidden fixed top-0 left-0 right-0 z-50 px-4 py-3 flex items-center justify-between border-b backdrop-blur-xl transition-colors ${
           darkMode
@@ -255,19 +372,29 @@ export default function Portfolio() {
           >
             <FaGithub className="w-4 h-4" />
           </a>
+
+          {/* MOBILE THEME TOGGLE BUTTON */}
           <button
-            onClick={() => setDarkMode(!darkMode)}
-            aria-label="Toggle Mode"
-            className={`p-2.5 rounded-xl border transition-all active:scale-95 ${
+            onClick={toggleThemeWithRipple}
+            aria-label="Toggle Theme Mode"
+            className={`p-2.5 rounded-xl border transition-all active:scale-90 relative overflow-hidden ${
               darkMode
                 ? "border-slate-800 bg-slate-900/60 text-amber-400"
                 : "border-slate-200 bg-slate-50 text-slate-600"
             }`}
           >
-            {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            <motion.div
+              key={darkMode ? "dark" : "light"}
+              initial={{ rotate: -90, scale: 0.5, opacity: 0 }}
+              animate={{ rotate: 0, scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            >
+              {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </motion.div>
           </button>
+
           <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
             aria-label="Toggle menu"
             className={`p-2.5 rounded-xl border transition-all active:scale-95 ${
               darkMode
@@ -284,7 +411,6 @@ export default function Portfolio() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <>
-            {/* Backdrop overlay */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -344,7 +470,7 @@ export default function Portfolio() {
         }`}
       >
         <button
-          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+          onClick={() => setSidebarCollapsed((prev) => !prev)}
           aria-label={sidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           className={`absolute -right-3.5 top-8 z-50 p-1.5 rounded-full border shadow-md transition-all duration-200 hover:scale-110 active:scale-95 ${
             darkMode
@@ -352,15 +478,10 @@ export default function Portfolio() {
               : "bg-white border-slate-300 text-slate-700 hover:text-sky-600"
           }`}
         >
-          {sidebarCollapsed ? (
-            <ChevronRight className="w-4 h-4" />
-          ) : (
-            <ChevronLeft className="w-4 h-4" />
-          )}
+          {sidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
 
         <div className="flex flex-col items-center w-full">
-          {/* Profile Image */}
           <div
             className={`relative rounded-full overflow-hidden border-4 shadow-lg shrink-0 transition-all duration-300 ${
               darkMode ? "border-emerald-500/30" : "border-sky-500/30"
@@ -379,9 +500,7 @@ export default function Portfolio() {
             className={`w-full rounded-2xl border backdrop-blur-md shadow-sm transition-all duration-300 ${
               sidebarCollapsed ? "p-1.5 space-y-2" : "p-2.5 space-y-1.5"
             } ${
-              darkMode
-                ? "bg-slate-950/80 border-slate-800/80"
-                : "bg-white/90 border-slate-200/90"
+              darkMode ? "bg-slate-950/80 border-slate-800/80" : "bg-white/90 border-slate-200/90"
             }`}
           >
             {NAV_ITEMS.map((item) => {
@@ -393,9 +512,7 @@ export default function Portfolio() {
                   onClick={() => scrollToSection(item.id)}
                   title={sidebarCollapsed ? item.label : undefined}
                   className={`w-full flex items-center rounded-xl border text-xs font-bold tracking-wider uppercase transition-all duration-200 ${
-                    sidebarCollapsed
-                      ? "justify-center p-2.5"
-                      : "justify-between px-4 py-2.5"
+                    sidebarCollapsed ? "justify-center p-2.5" : "justify-between px-4 py-2.5"
                   } ${
                     isActive
                       ? darkMode
@@ -407,7 +524,7 @@ export default function Portfolio() {
                   }`}
                 >
                   <div className="flex items-center space-x-3">
-                    <Icon className={`${sidebarCollapsed ? "w-5 h-5" : "w-4 h-4"}`} />
+                    <Icon className={sidebarCollapsed ? "w-5 h-5" : "w-4 h-4"} />
                     {!sidebarCollapsed && <span>{item.label}</span>}
                   </div>
                   {!sidebarCollapsed && (
@@ -472,10 +589,11 @@ export default function Portfolio() {
             </div>
           )}
 
+          {/* DESKTOP THEME TOGGLE BUTTON */}
           <button
-            onClick={() => setDarkMode(!darkMode)}
+            onClick={toggleThemeWithRipple}
             aria-label="Toggle Theme Mode"
-            className={`p-2.5 rounded-xl border transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center ${
+            className={`p-2.5 rounded-xl border transition-all duration-200 hover:scale-105 active:scale-90 flex items-center justify-center relative overflow-hidden ${
               sidebarCollapsed ? "w-full" : "shrink-0"
             } ${
               darkMode
@@ -483,29 +601,32 @@ export default function Portfolio() {
                 : "border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
             }`}
           >
-            {darkMode ? (
-              <Sun className="w-4 h-4 text-amber-400" />
-            ) : (
-              <Moon className="w-4 h-4 text-slate-600" />
-            )}
+            <motion.div
+              key={darkMode ? "dark" : "light"}
+              initial={{ rotate: -90, scale: 0.5, opacity: 0 }}
+              animate={{ rotate: 0, scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            >
+              {darkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
+            </motion.div>
           </button>
         </div>
       </aside>
 
       {/* MAIN CONTENT AREA */}
       <main
+        ref={mainContainerRef}
         id="main-content"
         className="flex-1 h-full min-h-[100dvh] md:min-h-0 overflow-y-auto pt-14 md:pt-0 scroll-smooth"
       >
-        {/* HERO SECTION */}
+        {/* HERO / ABOUT SECTION */}
         <section
           id="about"
           className="relative min-h-[100dvh] flex items-center justify-start overflow-hidden border-b border-slate-200 dark:border-slate-800/80 px-5 sm:px-12 md:px-16 py-12 sm:py-16"
         >
-          {/* Background Image Layer */}
           <div className="absolute inset-0 z-0">
             <Image
-              src={darkMode ? "/back1.jpg" : "/back4.jpg"}
+              src={darkMode ? "/back1.jpg" : "/back7.jpg"}
               alt={`${PROFILE_DATA.name} Background`}
               fill
               className="object-cover object-center transition-all duration-500"
@@ -521,7 +642,6 @@ export default function Portfolio() {
             />
           </div>
 
-          {/* Hero Overlay Content */}
           <div className="relative z-10 max-w-3xl space-y-5 text-white my-auto">
             <div className="space-y-1.5">
               <h1 className="text-3xl xs:text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight uppercase leading-tight text-slate-100 drop-shadow-md">
@@ -530,9 +650,11 @@ export default function Portfolio() {
                   {PROFILE_DATA.surname}
                 </span>
               </h1>
-              <p className={`text-xs sm:text-sm font-mono tracking-wider font-bold uppercase drop-shadow ${
-                darkMode ? "text-emerald-400" : "text-sky-300"
-              }`}>
+              <p
+                className={`text-xs sm:text-sm font-mono tracking-wider font-bold uppercase drop-shadow ${
+                  darkMode ? "text-emerald-400" : "text-sky-300"
+                }`}
+              >
                 {PROFILE_DATA.role}
               </p>
             </div>
@@ -632,9 +754,11 @@ export default function Portfolio() {
                     : "bg-white border-slate-200 hover:border-sky-300"
                 }`}
               >
-                <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs font-mono font-bold ${
-                  darkMode ? "text-emerald-400" : "text-sky-500"
-                }`}>
+                <div
+                  className={`flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs font-mono font-bold ${
+                    darkMode ? "text-emerald-400" : "text-sky-500"
+                  }`}
+                >
                   <span>{exp.company}</span>
                   <span className="text-slate-400 font-normal sm:font-bold">{exp.period}</span>
                 </div>
@@ -666,9 +790,7 @@ export default function Portfolio() {
                 key={index}
                 onClick={() => setSelectedImgIndex(index)}
                 className={`relative aspect-square rounded-2xl overflow-hidden border cursor-pointer group shadow-sm active:scale-95 transition-transform ${
-                  darkMode
-                    ? "border-slate-800 bg-slate-900"
-                    : "border-slate-200 bg-slate-100"
+                  darkMode ? "border-slate-800 bg-slate-900" : "border-slate-200 bg-slate-100"
                 }`}
               >
                 <Image
@@ -678,10 +800,8 @@ export default function Portfolio() {
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 />
-                <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white ${
-                  darkMode ? "bg-emerald-950/60" : "bg-sky-900/40"
-                }`}>
-                  <Maximize2 className="w-5 h-5" />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <Maximize2 className="w-6 h-6 text-white" />
                 </div>
               </div>
             ))}
@@ -691,35 +811,40 @@ export default function Portfolio() {
         {/* SKILLS SECTION */}
         <section
           id="skills"
-          className="p-5 sm:p-12 md:p-16 max-w-4xl space-y-6 sm:space-y-8 border-b border-slate-200 dark:border-slate-800/80"
+          className="p-5 sm:p-12 md:p-16 space-y-6 sm:space-y-8 border-b border-slate-200 dark:border-slate-800/80"
         >
           <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
             Skills
           </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             {SKILL_CATEGORIES.map((cat, idx) => {
               const Icon = cat.icon;
               return (
                 <div
                   key={idx}
-                  className={`p-4 sm:p-6 rounded-2xl border shadow-sm flex items-start gap-3.5 transition-all ${
+                  className={`p-6 rounded-2xl border space-y-3 ${
                     darkMode
-                      ? "bg-slate-900/60 border-slate-800 hover:border-emerald-500/50"
-                      : "bg-white border-slate-200 hover:border-sky-300"
+                      ? "bg-slate-900/60 border-slate-800"
+                      : "bg-white border-slate-200"
                   }`}
                 >
-                  <Icon className={`w-5 h-5 sm:w-6 sm:h-6 shrink-0 mt-0.5 ${darkMode ? "text-emerald-400" : "text-sky-500"}`} />
-                  <div>
-                    <h3 className="font-bold text-sm sm:text-base mb-1">{cat.title}</h3>
-                    <p
-                      className={`text-xs leading-relaxed ${
-                        darkMode ? "text-slate-400" : "text-slate-600"
-                      }`}
-                    >
-                      {cat.skills}
-                    </p>
+                  <div
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                      darkMode
+                        ? "bg-emerald-500/10 text-emerald-400"
+                        : "bg-sky-500/10 text-sky-500"
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
                   </div>
+                  <h3 className="font-bold text-base">{cat.title}</h3>
+                  <p
+                    className={`text-xs sm:text-sm leading-relaxed ${
+                      darkMode ? "text-slate-400" : "text-slate-600"
+                    }`}
+                  >
+                    {cat.skills}
+                  </p>
                 </div>
               );
             })}
@@ -729,150 +854,166 @@ export default function Portfolio() {
         {/* AWARDS SECTION */}
         <section
           id="awards"
-          className="p-5 sm:p-12 md:p-16 max-w-4xl space-y-6 sm:space-y-8 border-b border-slate-200 dark:border-slate-800/80"
+          className="p-5 sm:p-12 md:p-16 space-y-6 sm:space-y-8 border-b border-slate-200 dark:border-slate-800/80"
         >
           <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
             Awards
           </h2>
-
-          <div className="space-y-3 sm:space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {AWARDS.map((award, idx) => (
               <div
                 key={idx}
-                className={`p-4 sm:p-6 rounded-2xl border shadow-sm flex items-center gap-3.5 transition-all ${
+                className={`p-6 rounded-2xl border space-y-2 ${
                   darkMode
-                    ? "bg-slate-900/60 border-slate-800 hover:border-emerald-500/50"
-                    : "bg-white border-slate-200 hover:border-sky-300"
+                    ? "bg-slate-900/60 border-slate-800"
+                    : "bg-white border-slate-200"
                 }`}
               >
-                <Award className={`w-6 h-6 sm:w-7 sm:h-7 shrink-0 ${darkMode ? "text-emerald-400" : "text-sky-500"}`} />
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-sm sm:text-base truncate">{award.title}</h3>
-                  <p
-                    className={`text-xs truncate ${
-                      darkMode ? "text-slate-400" : "text-slate-500"
-                    }`}
-                  >
-                    {award.organization}
-                  </p>
-                </div>
-                <span className={`text-xs font-mono font-bold shrink-0 ${
-                  darkMode ? "text-emerald-400" : "text-sky-500"
-                }`}>
+                <div
+                  className={`text-xs font-mono font-bold ${
+                    darkMode ? "text-emerald-400" : "text-sky-500"
+                  }`}
+                >
                   {award.year}
-                </span>
+                </div>
+                <h3 className="font-bold text-base">{award.title}</h3>
+                <p
+                  className={`text-xs sm:text-sm ${
+                    darkMode ? "text-slate-400" : "text-slate-600"
+                  }`}
+                >
+                  {award.organization}
+                </p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* CONTACT SECTION (MOBILE FORM ZOOM PREVENTED) */}
-        <section id="contact" className="p-5 sm:p-12 md:p-16 max-w-2xl space-y-6 sm:space-y-8">
+        {/* CONTACT SECTION */}
+        <section
+          id="contact"
+          className="p-5 sm:p-12 md:p-16 space-y-6 sm:space-y-8 max-w-3xl"
+        >
           <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
             Contact
           </h2>
-
-          <form onSubmit={handleFormSubmit} className="space-y-3.5 sm:space-y-4">
-            <input
-              type="text"
-              placeholder="Your Name"
-              required
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className={`w-full px-4 py-3.5 rounded-xl border text-base sm:text-sm focus:outline-none transition-colors ${
-                darkMode
-                  ? "bg-slate-900/60 border-slate-800 text-white placeholder-slate-500 focus:border-emerald-500"
-                  : "bg-white border-slate-300 text-slate-800 placeholder-slate-400 focus:border-sky-500"
-              }`}
-            />
-            <input
-              type="email"
-              placeholder="Your Email"
-              required
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className={`w-full px-4 py-3.5 rounded-xl border text-base sm:text-sm focus:outline-none transition-colors ${
-                darkMode
-                  ? "bg-slate-900/60 border-slate-800 text-white placeholder-slate-500 focus:border-emerald-500"
-                  : "bg-white border-slate-300 text-slate-800 placeholder-slate-400 focus:border-sky-500"
-              }`}
-            />
+          <form onSubmit={handleFormSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <input
+                type="text"
+                placeholder="Your Name"
+                required
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                className={`p-3.5 rounded-xl border text-sm outline-none transition-colors ${
+                  darkMode
+                    ? "bg-slate-900 border-slate-800 focus:border-emerald-500"
+                    : "bg-slate-50 border-slate-200 focus:border-sky-500"
+                }`}
+              />
+              <input
+                type="email"
+                placeholder="Your Email"
+                required
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+                className={`p-3.5 rounded-xl border text-sm outline-none transition-colors ${
+                  darkMode
+                    ? "bg-slate-900 border-slate-800 focus:border-emerald-500"
+                    : "bg-slate-50 border-slate-200 focus:border-sky-500"
+                }`}
+              />
+            </div>
             <textarea
-              rows={4}
               placeholder="Your Message"
+              rows={5}
               required
               value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              className={`w-full px-4 py-3.5 rounded-xl border text-base sm:text-sm focus:outline-none transition-colors ${
+              onChange={(e) =>
+                setFormData({ ...formData, message: e.target.value })
+              }
+              className={`w-full p-3.5 rounded-xl border text-sm outline-none transition-colors resize-none ${
                 darkMode
-                  ? "bg-slate-900/60 border-slate-800 text-white placeholder-slate-500 focus:border-emerald-500"
-                  : "bg-white border-slate-300 text-slate-800 placeholder-slate-400 focus:border-sky-500"
+                  ? "bg-slate-900 border-slate-800 focus:border-emerald-500"
+                  : "bg-slate-50 border-slate-200 focus:border-sky-500"
               }`}
             />
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`w-full sm:w-auto inline-flex items-center justify-center space-x-2 text-white font-bold uppercase text-xs tracking-wider px-8 py-3.5 rounded-xl transition-all shadow-lg disabled:opacity-50 active:scale-95 ${
+              className={`inline-flex items-center justify-center space-x-2 text-white text-xs font-bold uppercase tracking-wider px-6 py-3.5 rounded-xl shadow-lg transition-all active:scale-95 disabled:opacity-50 ${
                 darkMode
                   ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/25"
                   : "bg-sky-500 hover:bg-sky-600 shadow-sky-500/25"
               }`}
             >
-              <Send className="w-3.5 h-3.5" />
-              <span>{isSubmitting ? "Sending..." : "Send Message"}</span>
+              {isSubmitting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : formSubmitted ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Sent Successfully</span>
+                </>
+              ) : (
+                <>
+                  <Send className="w-4 h-4" />
+                  <span>Send Message</span>
+                </>
+              )}
             </button>
-            {formSubmitted && (
-              <p className="text-xs text-emerald-500 flex items-center gap-1 font-semibold pt-1">
-                <CheckCircle2 className="w-4 h-4" /> Message sent successfully!
-              </p>
-            )}
           </form>
         </section>
       </main>
 
-      {/* MOBILE LIGHTBOX MODAL */}
+      {/* GALLERY LIGHTBOX MODAL */}
       <AnimatePresence>
         {selectedImgIndex !== null && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4"
             onClick={() => setSelectedImgIndex(null)}
-            className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-2 sm:p-4 backdrop-blur-md"
           >
+            <button
+              onClick={() => setSelectedImgIndex(null)}
+              className="absolute top-4 right-4 p-2 text-white/80 hover:text-white rounded-full bg-white/10"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handlePrevImage();
+              }}
+              className="absolute left-4 p-2 text-white/80 hover:text-white rounded-full bg-white/10"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
             <div
-              className="relative max-w-4xl max-h-[80vh] w-full h-full flex items-center justify-center"
+              className="relative w-full max-w-4xl aspect-square max-h-[80vh]"
               onClick={(e) => e.stopPropagation()}
             >
               <Image
                 src={galleryImages[selectedImgIndex]}
-                alt={`Project detail ${selectedImgIndex + 1}`}
+                alt={`Portfolio ${selectedImgIndex + 1}`}
                 fill
                 className="object-contain"
-                sizes="100vw"
               />
-              <button
-                onClick={() => setSelectedImgIndex(null)}
-                aria-label="Close Lightbox"
-                className="absolute top-2 right-2 sm:top-4 sm:right-4 p-3 rounded-full bg-slate-900/80 text-white hover:bg-slate-800 border border-slate-700 transition-all active:scale-95"
-              >
-                <X className="w-5 h-5" />
-              </button>
-              <button
-                onClick={handlePrevImage}
-                aria-label="Previous Image"
-                className="absolute left-2 sm:left-4 p-3 rounded-full bg-slate-900/80 text-white hover:bg-slate-800 border border-slate-700 transition-all active:scale-95"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
-                onClick={handleNextImage}
-                aria-label="Next Image"
-                className="absolute right-2 sm:right-4 p-3 rounded-full bg-slate-900/80 text-white hover:bg-slate-800 border border-slate-700 transition-all active:scale-95"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
             </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleNextImage();
+              }}
+              className="absolute right-4 p-2 text-white/80 hover:text-white rounded-full bg-white/10"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
