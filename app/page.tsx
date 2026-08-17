@@ -5,6 +5,11 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Analytics } from "@vercel/analytics/next";
 import {
+  Star,
+  Phone,
+  Mail,
+  MapPin,
+  ExternalLink,
   Download,
   Code,
   Cpu,
@@ -22,20 +27,179 @@ import {
   Briefcase,
   FolderGit2,
   Wrench,
-  Mail,
   CheckCircle2,
   Loader2,
+  Gamepad2,
+  BookOpen,
+  Film,
+  GraduationCap,
 } from "lucide-react";
-import { FaLinkedinIn, FaGithub, FaTelegram, FaXTwitter } from "react-icons/fa6";
+import { FaLinkedinIn, FaGithub, FaTelegram, FaWhatsapp, FaFacebook, FaLinkedin } from "react-icons/fa6";
+
+
+// Combined list of all certificates for seamless lightbox navigation
+const ALL_CERTIFICATES = [
+  {
+    id: "fc1",
+    title: "International Youth Fellowship Academy (Korea)",
+    image: "/certificates/cc1.jpg",
+    icon: "/certificates/ccc1.jpg",
+    link: "https://www.iyf.org/",
+    organization: "IYF Academy",
+    isFeatured: true,
+  },
+  {
+    id: "fc2",
+    title: "Diploma for Web Design",
+    image: "/certificates/cc2.jpg",
+    icon: "/certificates/ccc2.jpg",
+    link: "https://study.moe.gov.et/",
+    organization: "Ministry of Education",
+    isFeatured: true,
+  },
+  ...Array.from({ length: 19 }, (_, i) => ({
+    id: `c${i + 1}`,
+    title: `Certificate ${i + 1}`,
+    image: `/certificates/c${i + 1}.jpg`,
+    icon: null,
+    link: null,
+    organization: "Verified Credential",
+    isFeatured: false,
+  })),
+] as const;
+
+const FEATURED_CERTIFICATES = ALL_CERTIFICATES.filter((c) => c.isFeatured);
+const CERTIFICATE_GALLERY = ALL_CERTIFICATES.filter((c) => !c.isFeatured);
+
+
+
+
+
+const EXPERIENCES = [
+  {
+    type: "education",
+    company: "Addis Ketema General Secondary School",
+    role: "Grade 12 – Natural Science",
+    period: "2024 – 2026",
+    description:
+      "Completed secondary education with a strong interest in Mathematics, Physics, Chemistry, technology and computer science.",
+    logo: "/School.jpg",
+    link: "https://addisketema.sims.addislearning.edu.et/",
+  },
+  {
+    type: "learning",
+    company: "Self-Learning",
+    role: "Programming & Web Development",
+    period: "2025 – Present",
+    description:
+      "Learning Python, HTML, CSS, JavaScript and modern web development through practical projects.",
+    logo: null,
+    link: null,
+  },
+  {
+    type: "projects",
+    company: "Personal Projects",
+    role: "Technology Projects",
+    period: "Ongoing",
+    description:
+      "Building practical software and web projects to improve programming skills and solve real-world problems.",
+    logo: null,
+    link: null,
+  },
+] as const;
+
+
+
+
+
+
+const PROJECTS_LIST = [
+  {
+    id: "01",
+    title: "Ethiopian Quiz Game",
+    description:
+      "An interactive quiz game about Ethiopian culture, history and general knowledge with scoring and question randomization.",
+    tags: ["Python", "Game"],
+    icon: Gamepad2,
+    github: "https://github.com",
+    demo: "https://demo.com",
+  },
+  {
+    id: "02",
+    title: "Library Management System",
+    description:
+      "A modern library management interface for organizing books, members, borrowing and returning activities.",
+    tags: ["HTML", "CSS", "JavaScript"],
+    icon: BookOpen,
+    github: "https://github.com",
+    demo: "https://demo.com",
+  },
+  {
+    id: "03",
+    title: "Movie Explorer",
+    description:
+      "A movie discovery application that allows users to search for movies and explore information through a modern interface.",
+    tags: ["React", "API"],
+    icon: Film,
+    github: "https://github.com",
+    demo: "https://demo.com",
+  },
+  {
+    id: "04",
+    title: "School Website",
+    description:
+      "A responsive website concept designed to provide students and teachers with useful school information.",
+    tags: ["HTML", "CSS"],
+    icon: GraduationCap,
+    github: "https://github.com",
+    demo: "https://demo.com",
+  },
+] as const;
+
+
+
+
+const SKILLS_LIST = [
+  {
+    name: "Python",
+    description: "Programming, logic, games, and problem solving.",
+    level: 85,
+  },
+  {
+    name: "HTML",
+    description: "Building structured and accessible websites.",
+    level: 90,
+  },
+  {
+    name: "CSS",
+    description: "Modern responsive layouts and animations.",
+    level: 85,
+  },
+  {
+    name: "JavaScript",
+    description: "Interactive and dynamic web experiences.",
+    level: 70,
+  },
+  {
+    name: "Git & GitHub",
+    description: "Version control and project collaboration.",
+    level: 70,
+  },
+  {
+    name: "Web Development",
+    description: "Creating responsive modern websites.",
+    level: 80,
+  },
+] as const;
+
 
 // --- CONFIGURATION & DATA ---
 const PROFILE_DATA = {
   name: "ZEWDU",
-  surname: "TESFAYE",
-  role: "Full-Stack Software Engineer & AI Systems Developer",
-  bio: "Experienced in building scalable web platforms, distributed architectures, and custom AI models. Passionate about engineering high-performance digital products that solve real-world problems through clean code and modern system design.",
-  cvPath: "/zewdu_cv.pdf",
-  avatar: "/profile0.jpg",
+  surname: "Taye",
+  role: "Student & Aspiring Software Developer",
+  bio: "I am passionate about technology, programming and building useful digital solutions that can make a positive difference in my community.",
+  avatar: "/profile3.jpg",
   socials: {
     linkedin: "https://www.linkedin.com/in/zewdu-taye-54b1b8366",
     github: "https://github.com/Zewdutaye",
@@ -45,50 +209,16 @@ const PROFILE_DATA = {
 } as const;
 
 const NAV_ITEMS = [
-  { id: "about", label: "ABOUT", icon: User },
+  { id: "about", label: "Home", icon: Star },
+  { id: "about-me", label: "About", icon: User },
   { id: "experience", label: "EXPERIENCE", icon: Briefcase },
-  { id: "portfolio", label: "PORTFOLIO", icon: FolderGit2 },
+  { id: "portfolio", label: "Projects", icon: FolderGit2 },
   { id: "skills", label: "SKILLS", icon: Wrench },
   { id: "awards", label: "AWARDS", icon: Award },
   { id: "contact", label: "CONTACT", icon: Mail },
 ] as const;
 
 type NavTab = (typeof NAV_ITEMS)[number]["id"];
-
-const EXPERIENCES = [
-  {
-    company: "TECH CORP ETHIOPIA",
-    period: "2024 - PRESENT",
-    role: "Senior Full-Stack Engineer",
-    description:
-      "Architecting distributed microservices, Next.js web applications, and automated deployment pipelines.",
-  },
-  {
-    company: "INNOVATE LABS",
-    period: "2022 - 2024",
-    role: "Software Developer & AI Specialist",
-    description:
-      "Integrated Machine Learning models into cloud applications and built responsive frontend dashboards.",
-  },
-] as const;
-
-const SKILL_CATEGORIES = [
-  {
-    icon: Code,
-    title: "Full-Stack Development",
-    skills: "React, Next.js, TypeScript, Node.js, Tailwind CSS, REST & GraphQL APIs",
-  },
-  {
-    icon: Cpu,
-    title: "AI & Data Science",
-    skills: "Python, PyTorch, Scikit-Learn, Pandas, Computer Vision, Model Deployment",
-  },
-  {
-    icon: Layers,
-    title: "DevOps & Cloud",
-    skills: "Docker, Git, CI/CD Pipelines, PostgreSQL, Supabase, Vercel",
-  },
-] as const;
 
 const AWARDS = [
   {
@@ -104,6 +234,30 @@ const AWARDS = [
 ] as const;
 
 export default function Portfolio() {
+
+
+
+
+  // Inside your component function:
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  const activeCert = lightboxIndex !== null ? ALL_CERTIFICATES[lightboxIndex] : null;
+
+  const handlePrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (lightboxIndex !== null) {
+      setLightboxIndex((prev) => (prev! > 0 ? prev! - 1 : ALL_CERTIFICATES.length - 1));
+    }
+  };
+
+  const handleNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (lightboxIndex !== null) {
+      setLightboxIndex((prev) => (prev! < ALL_CERTIFICATES.length - 1 ? prev! + 1 : 0));
+    }
+  };
+
+
   const [activeTab, setActiveTab] = useState<NavTab>("about");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -171,13 +325,13 @@ export default function Portfolio() {
                 {
                   clipPath: isTurningOff
                     ? [
-                        `circle(${endRadius}px at ${x}px ${y}px)`,
-                        `circle(0px at ${x}px ${y}px)`,
-                      ]
+                      `circle(${endRadius}px at ${x}px ${y}px)`,
+                      `circle(0px at ${x}px ${y}px)`,
+                    ]
                     : [
-                        `circle(0px at ${x}px ${y}px)`,
-                        `circle(${endRadius}px at ${x}px ${y}px)`,
-                      ],
+                      `circle(0px at ${x}px ${y}px)`,
+                      `circle(${endRadius}px at ${x}px ${y}px)`,
+                    ],
                 },
                 {
                   duration: 500,
@@ -322,11 +476,10 @@ export default function Portfolio() {
 
   return (
     <div
-      className={`min-h-[100dvh] md:h-screen w-full font-sans transition-colors duration-300 flex flex-col md:flex-row relative md:overflow-hidden ${
-        darkMode
-          ? "bg-slate-950 text-slate-100 selection:bg-emerald-500 selection:text-white"
-          : "bg-white text-slate-800 selection:bg-sky-500 selection:text-white"
-      }`}
+      className={`min-h-[100dvh] md:h-screen w-full font-sans transition-colors duration-300 flex flex-col md:flex-row relative md:overflow-hidden ${darkMode
+        ? "bg-slate-950 text-slate-100 selection:bg-emerald-500 selection:text-white"
+        : "bg-white text-slate-800 selection:bg-sky-500 selection:text-white"
+        }`}
     >
       <Analytics />
 
@@ -353,11 +506,10 @@ export default function Portfolio() {
 
       {/* MOBILE APP HEADER */}
       <header
-        className={`md:hidden fixed top-0 left-0 right-0 z-50 px-4 py-3 flex items-center justify-between border-b backdrop-blur-xl transition-colors ${
-          darkMode
-            ? "bg-slate-950/90 border-slate-800/80 text-white"
-            : "bg-white/90 border-slate-200/80 text-slate-900"
-        }`}
+        className={`md:hidden fixed top-0 left-0 right-0 z-50 px-4 py-3 flex items-center justify-between border-b backdrop-blur-xl transition-colors ${darkMode
+          ? "bg-slate-950/90 border-slate-800/80 text-white"
+          : "bg-white/90 border-slate-200/80 text-slate-900"
+          }`}
       >
         <span className="font-black tracking-widest text-sm uppercase truncate max-w-[140px]">
           {PROFILE_DATA.name}{" "}
@@ -371,11 +523,10 @@ export default function Portfolio() {
           <button
             onClick={toggleThemeWithRipple}
             aria-label="Toggle Theme Mode"
-            className={`p-2.5 rounded-xl border transition-all active:scale-90 relative overflow-hidden ${
-              darkMode
-                ? "border-slate-800 bg-slate-900/60 text-amber-400"
-                : "border-slate-200 bg-slate-50 text-slate-600"
-            }`}
+            className={`p-2.5 rounded-xl border transition-all active:scale-90 relative overflow-hidden ${darkMode
+              ? "border-slate-800 bg-slate-900/60 text-amber-400"
+              : "border-slate-200 bg-slate-50 text-slate-600"
+              }`}
           >
             <motion.div
               key={darkMode ? "dark" : "light"}
@@ -390,11 +541,10 @@ export default function Portfolio() {
           <button
             onClick={() => setMobileMenuOpen((prev) => !prev)}
             aria-label="Toggle menu"
-            className={`p-2.5 rounded-xl border transition-all active:scale-95 ${
-              darkMode
-                ? "border-slate-800 bg-slate-900/60 text-white"
-                : "border-slate-200 bg-slate-50 text-slate-900"
-            }`}
+            className={`p-2.5 rounded-xl border transition-all active:scale-95 ${darkMode
+              ? "border-slate-800 bg-slate-900/60 text-white"
+              : "border-slate-200 bg-slate-50 text-slate-900"
+              }`}
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -417,9 +567,8 @@ export default function Portfolio() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className={`md:hidden fixed top-[57px] left-0 right-0 z-40 border-b shadow-2xl px-4 py-5 space-y-2 backdrop-blur-2xl ${
-                darkMode ? "bg-slate-950/95 border-slate-800" : "bg-white/95 border-slate-200"
-              }`}
+              className={`md:hidden fixed top-[57px] left-0 right-0 z-40 border-b shadow-2xl px-4 py-5 space-y-2 backdrop-blur-2xl ${darkMode ? "bg-slate-950/95 border-slate-800" : "bg-white/95 border-slate-200"
+                }`}
             >
               <div className="space-y-2">
                 {NAV_ITEMS.map((item) => {
@@ -429,15 +578,14 @@ export default function Portfolio() {
                     <button
                       key={item.id}
                       onClick={() => scrollToSection(item.id)}
-                      className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl border text-xs font-extrabold tracking-widest transition-all active:scale-[0.98] ${
-                        isActive
-                          ? darkMode
-                            ? "border-emerald-500 bg-emerald-500/10 text-emerald-400 shadow-sm"
-                            : "border-sky-500 bg-sky-500/10 text-sky-500 shadow-sm"
-                          : darkMode
+                      className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl border text-xs font-extrabold tracking-widest transition-all active:scale-[0.98] ${isActive
+                        ? darkMode
+                          ? "border-emerald-500 bg-emerald-500/10 text-emerald-400 shadow-sm"
+                          : "border-sky-500 bg-sky-500/10 text-sky-500 shadow-sm"
+                        : darkMode
                           ? "border-slate-800 bg-slate-900/40 text-slate-300"
                           : "border-slate-200 bg-slate-50/80 text-slate-700"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center space-x-3">
                         <Icon className="w-4 h-4" />
@@ -455,31 +603,27 @@ export default function Portfolio() {
 
       {/* DESKTOP SIDEBAR */}
       <aside
-        className={`hidden md:flex sticky top-0 left-0 z-40 h-screen flex-col items-center justify-between py-8 shrink-0 border-r transition-all duration-300 ease-in-out relative ${
-          sidebarCollapsed ? "w-20 px-3" : "w-72 px-6"
-        } ${
-          darkMode
+        className={`hidden md:flex sticky top-0 left-0 z-40 h-screen flex-col items-center justify-between py-8 shrink-0 border-r transition-all duration-300 ease-in-out relative ${sidebarCollapsed ? "w-20 px-3" : "w-72 px-6"
+          } ${darkMode
             ? "bg-slate-900/60 border-slate-800 text-slate-100"
             : "bg-slate-50/80 border-slate-200 text-slate-800"
-        }`}
+          }`}
       >
         <button
           onClick={() => setSidebarCollapsed((prev) => !prev)}
           aria-label={sidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-          className={`absolute -right-3.5 top-8 z-50 p-1.5 rounded-full border shadow-md transition-all duration-200 hover:scale-110 active:scale-95 ${
-            darkMode
-              ? "bg-slate-900 border-slate-700 text-slate-200 hover:text-emerald-400"
-              : "bg-white border-slate-300 text-slate-700 hover:text-sky-600"
-          }`}
+          className={`absolute -right-3.5 top-8 z-50 p-1.5 rounded-full border shadow-md transition-all duration-200 hover:scale-110 active:scale-95 ${darkMode
+            ? "bg-slate-900 border-slate-700 text-slate-200 hover:text-emerald-400"
+            : "bg-white border-slate-300 text-slate-700 hover:text-sky-600"
+            }`}
         >
           {sidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
 
         <div className="flex flex-col items-center w-full">
           <div
-            className={`relative rounded-full overflow-hidden border-4 shadow-lg shrink-0 transition-all duration-300 ${
-              darkMode ? "border-emerald-500/30" : "border-sky-500/30"
-            } ${sidebarCollapsed ? "w-10 h-10 mb-6 border-2" : "w-32 h-32 mb-8"}`}
+            className={`relative rounded-full overflow-hidden border-4 shadow-lg shrink-0 transition-all duration-300 ${darkMode ? "border-emerald-500/30" : "border-sky-500/30"
+              } ${sidebarCollapsed ? "w-10 h-10 mb-6 border-2" : "w-32 h-32 mb-8"}`}
           >
             <Image
               src={PROFILE_DATA.avatar}
@@ -491,11 +635,9 @@ export default function Portfolio() {
           </div>
 
           <nav
-            className={`w-full rounded-2xl border backdrop-blur-md shadow-sm transition-all duration-300 ${
-              sidebarCollapsed ? "p-1.5 space-y-2" : "p-2.5 space-y-1.5"
-            } ${
-              darkMode ? "bg-slate-950/80 border-slate-800/80" : "bg-white/90 border-slate-200/90"
-            }`}
+            className={`w-full rounded-2xl border backdrop-blur-md shadow-sm transition-all duration-300 ${sidebarCollapsed ? "p-1.5 space-y-2" : "p-2.5 space-y-1.5"
+              } ${darkMode ? "bg-slate-950/80 border-slate-800/80" : "bg-white/90 border-slate-200/90"
+              }`}
           >
             {NAV_ITEMS.map((item) => {
               const isActive = activeTab === item.id;
@@ -505,17 +647,15 @@ export default function Portfolio() {
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
                   title={sidebarCollapsed ? item.label : undefined}
-                  className={`w-full flex items-center rounded-xl border text-xs font-bold tracking-wider uppercase transition-all duration-200 ${
-                    sidebarCollapsed ? "justify-center p-2.5" : "justify-between px-4 py-2.5"
-                  } ${
-                    isActive
+                  className={`w-full flex items-center rounded-xl border text-xs font-bold tracking-wider uppercase transition-all duration-200 ${sidebarCollapsed ? "justify-center p-2.5" : "justify-between px-4 py-2.5"
+                    } ${isActive
                       ? darkMode
                         ? "border-emerald-500 bg-emerald-500 text-white shadow-md shadow-emerald-500/20"
                         : "border-sky-500 bg-sky-500 text-white shadow-md shadow-sky-500/20"
                       : darkMode
-                      ? "border-slate-800/60 bg-slate-900/40 text-slate-400 hover:text-white hover:border-slate-700 hover:bg-slate-800/60"
-                      : "border-slate-200/60 bg-slate-50/50 text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-100/80"
-                  }`}
+                        ? "border-slate-800/60 bg-slate-900/40 text-slate-400 hover:text-white hover:border-slate-700 hover:bg-slate-800/60"
+                        : "border-slate-200/60 bg-slate-50/50 text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-100/80"
+                    }`}
                 >
                   <div className="flex items-center space-x-3">
                     <Icon className={sidebarCollapsed ? "w-5 h-5" : "w-4 h-4"} />
@@ -523,9 +663,8 @@ export default function Portfolio() {
                   </div>
                   {!sidebarCollapsed && (
                     <div
-                      className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                        isActive ? "bg-white" : "bg-transparent"
-                      }`}
+                      className={`w-1.5 h-1.5 rounded-full transition-colors ${isActive ? "bg-white" : "bg-transparent"
+                        }`}
                     />
                   )}
                 </button>
@@ -535,9 +674,8 @@ export default function Portfolio() {
         </div>
 
         <div
-          className={`flex items-center justify-between transition-all duration-300 ${
-            sidebarCollapsed ? "flex-col w-full gap-2" : "w-full"
-          }`}
+          className={`flex items-center justify-between transition-all duration-300 ${sidebarCollapsed ? "flex-col w-full gap-2" : "w-full"
+            }`}
         >
           {!sidebarCollapsed && (
             <div className="flex items-center gap-1.5 shrink-0">
@@ -546,11 +684,10 @@ export default function Portfolio() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="LinkedIn Profile"
-                className={`p-2.5 rounded-xl border transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center ${
-                  darkMode
-                    ? "border-slate-800 bg-slate-950/80 text-slate-300 hover:text-emerald-400 hover:border-slate-700"
-                    : "border-slate-200 bg-white text-slate-600 hover:text-sky-600 hover:border-slate-300"
-                }`}
+                className={`p-2.5 rounded-xl border transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center ${darkMode
+                  ? "border-slate-800 bg-slate-950/80 text-slate-300 hover:text-emerald-400 hover:border-slate-700"
+                  : "border-slate-200 bg-white text-slate-600 hover:text-sky-600 hover:border-slate-300"
+                  }`}
               >
                 <FaLinkedinIn className="w-4 h-4" />
               </a>
@@ -559,11 +696,10 @@ export default function Portfolio() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="GitHub Profile"
-                className={`p-2.5 rounded-xl border transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center ${
-                  darkMode
-                    ? "border-slate-800 bg-slate-950/80 text-slate-300 hover:text-emerald-400 hover:border-slate-700"
-                    : "border-slate-200 bg-white text-slate-600 hover:text-sky-600 hover:border-slate-300"
-                }`}
+                className={`p-2.5 rounded-xl border transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center ${darkMode
+                  ? "border-slate-800 bg-slate-950/80 text-slate-300 hover:text-emerald-400 hover:border-slate-700"
+                  : "border-slate-200 bg-white text-slate-600 hover:text-sky-600 hover:border-slate-300"
+                  }`}
               >
                 <FaGithub className="w-4 h-4" />
               </a>
@@ -572,11 +708,10 @@ export default function Portfolio() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Telegram Profile"
-                className={`p-2.5 rounded-xl border transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center ${
-                  darkMode
-                    ? "border-slate-800 bg-slate-950/80 text-slate-300 hover:text-emerald-400 hover:border-slate-700"
-                    : "border-slate-200 bg-white text-slate-600 hover:text-sky-600 hover:border-slate-300"
-                }`}
+                className={`p-2.5 rounded-xl border transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center ${darkMode
+                  ? "border-slate-800 bg-slate-950/80 text-slate-300 hover:text-emerald-400 hover:border-slate-700"
+                  : "border-slate-200 bg-white text-slate-600 hover:text-sky-600 hover:border-slate-300"
+                  }`}
               >
                 <FaTelegram className="w-4 h-4" />
               </a>
@@ -587,13 +722,11 @@ export default function Portfolio() {
           <button
             onClick={toggleThemeWithRipple}
             aria-label="Toggle Theme Mode"
-            className={`p-2.5 rounded-xl border transition-all duration-200 hover:scale-105 active:scale-90 flex items-center justify-center relative overflow-hidden ${
-              sidebarCollapsed ? "w-full" : "shrink-0"
-            } ${
-              darkMode
+            className={`p-2.5 rounded-xl border transition-all duration-200 hover:scale-105 active:scale-90 flex items-center justify-center relative overflow-hidden ${sidebarCollapsed ? "w-full" : "shrink-0"
+              } ${darkMode
                 ? "border-slate-800 bg-slate-950 text-amber-400 hover:bg-slate-800"
                 : "border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
-            }`}
+              }`}
           >
             <motion.div
               key={darkMode ? "dark" : "light"}
@@ -628,11 +761,10 @@ export default function Portfolio() {
               sizes="100vw"
             />
             <div
-              className={`absolute inset-0 transition-colors duration-300 ${
-                darkMode
-                  ? "bg-gradient-to-t md:bg-gradient-to-r from-slate-950/95 via-slate-950/80 to-slate-950/50 sm:to-transparent"
-                  : "bg-gradient-to-t md:bg-gradient-to-r from-slate-900/90 via-slate-900/70 to-slate-900/40 sm:to-transparent"
-              }`}
+              className={`absolute inset-0 transition-colors duration-300 ${darkMode
+                ? "bg-gradient-to-t md:bg-gradient-to-r from-slate-950/95 via-slate-950/80 to-slate-950/50 sm:to-transparent"
+                : "bg-gradient-to-t md:bg-gradient-to-r from-slate-900/90 via-slate-900/70 to-slate-900/40 sm:to-transparent"
+                }`}
             />
           </div>
 
@@ -640,9 +772,8 @@ export default function Portfolio() {
             {/* MOBILE ONLY AVATAR IN FRONT */}
             <div className="md:hidden">
               <div
-                className={`relative w-28 h-28 rounded-full overflow-hidden border-4 shadow-xl mb-4 ${
-                  darkMode ? "border-emerald-500/40" : "border-sky-500/40"
-                }`}
+                className={`relative w-28 h-28 rounded-full overflow-hidden border-4 shadow-xl mb-4 ${darkMode ? "border-emerald-500/40" : "border-sky-500/40"
+                  }`}
               >
                 <Image
                   src={PROFILE_DATA.avatar}
@@ -662,9 +793,8 @@ export default function Portfolio() {
                 </span>
               </h1>
               <p
-                className={`text-xs sm:text-sm font-mono tracking-wider font-bold uppercase drop-shadow ${
-                  darkMode ? "text-emerald-400" : "text-sky-300"
-                }`}
+                className={`text-xs sm:text-sm font-mono tracking-wider font-bold uppercase drop-shadow ${darkMode ? "text-emerald-400" : "text-sky-300"
+                  }`}
               >
                 {PROFILE_DATA.role}
               </p>
@@ -674,17 +804,17 @@ export default function Portfolio() {
               {PROFILE_DATA.bio}
             </p>
 
+            {/* SOCIAL ICONS */}
             <div className="flex items-center gap-3 pt-1">
               <a
                 href={PROFILE_DATA.socials.linkedin}
                 target="_blank"
                 rel="noreferrer"
                 aria-label="LinkedIn"
-                className={`w-12 h-12 md:w-11 md:h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${
-                  darkMode
-                    ? "hover:bg-emerald-500 hover:border-emerald-500 hover:text-white"
-                    : "hover:bg-sky-500 hover:border-sky-500 hover:text-white"
-                }`}
+                className={`w-12 h-12 md:w-11 md:h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${darkMode
+                  ? "hover:bg-emerald-500 hover:border-emerald-500 hover:text-white"
+                  : "hover:bg-sky-500 hover:border-sky-500 hover:text-white"
+                  }`}
               >
                 <FaLinkedinIn className="w-5 h-5 md:w-4 md:h-4" />
               </a>
@@ -693,11 +823,10 @@ export default function Portfolio() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="GitHub"
-                className={`w-12 h-12 md:w-11 md:h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${
-                  darkMode
-                    ? "hover:bg-emerald-500 hover:border-emerald-500 hover:text-white"
-                    : "hover:bg-sky-500 hover:border-sky-500 hover:text-white"
-                }`}
+                className={`w-12 h-12 md:w-11 md:h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${darkMode
+                  ? "hover:bg-emerald-500 hover:border-emerald-500 hover:text-white"
+                  : "hover:bg-sky-500 hover:border-sky-500 hover:text-white"
+                  }`}
               >
                 <FaGithub className="w-5 h-5 md:w-4 md:h-4" />
               </a>
@@ -706,284 +835,936 @@ export default function Portfolio() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Telegram"
-                className={`w-12 h-12 md:w-11 md:h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${
-                  darkMode
-                    ? "hover:bg-emerald-500 hover:border-emerald-500 hover:text-white"
-                    : "hover:bg-sky-500 hover:border-sky-500 hover:text-white"
-                }`}
+                className={`w-12 h-12 md:w-11 md:h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${darkMode
+                  ? "hover:bg-emerald-500 hover:border-emerald-500 hover:text-white"
+                  : "hover:bg-sky-500 hover:border-sky-500 hover:text-white"
+                  }`}
               >
                 <FaTelegram className="w-5 h-5 md:w-4 md:h-4" />
               </a>
               <a
-                href={PROFILE_DATA.socials.twitter}
+                href="https://wa.me/251930417397"
                 target="_blank"
                 rel="noreferrer"
-                aria-label="Twitter"
-                className={`w-12 h-12 md:w-11 md:h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${
-                  darkMode
-                    ? "hover:bg-emerald-500 hover:border-emerald-500 hover:text-white"
-                    : "hover:bg-sky-500 hover:border-sky-500 hover:text-white"
-                }`}
+                aria-label="WhatsApp"
+                className={`w-12 h-12 md:w-11 md:h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${darkMode
+                  ? "hover:bg-emerald-500 hover:border-emerald-500 hover:text-white"
+                  : "hover:bg-sky-500 hover:border-sky-500 hover:text-white"
+                  }`}
               >
-                <FaXTwitter className="w-5 h-5 md:w-4 md:h-4" />
+                <FaWhatsapp className="w-5 h-5 md:w-4 md:h-4" />
               </a>
             </div>
 
-            <div className="pt-4">
-              <a
-                href={PROFILE_DATA.cvPath}
-                download
-                className={`w-full sm:w-auto inline-flex items-center justify-center space-x-2 text-white text-sm md:text-xs font-bold uppercase tracking-wider px-8 py-4 md:py-3.5 rounded-xl shadow-lg transition-all active:scale-95 ${
-                  darkMode
-                    ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/25"
-                    : "bg-sky-500 hover:bg-sky-600 shadow-sky-500/25"
-                }`}
+            {/* CTA BUTTONS */}
+            <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <button
+                onClick={() => scrollToSection("portfolio")}
+                className={`inline-flex items-center justify-center space-x-2.5 text-white text-sm md:text-xs font-extrabold uppercase tracking-wider px-8 py-4 md:py-3.5 rounded-xl shadow-lg transition-all duration-200 active:scale-95 group ${darkMode
+                  ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/25"
+                  : "bg-sky-500 hover:bg-sky-600 shadow-sky-500/25"
+                  }`}
               >
-                <Download className="w-5 h-5 md:w-4 md:h-4" />
-                <span>Download CV</span>
-              </a>
+                <FolderGit2 className="w-5 h-5 md:w-4 md:h-4 transition-transform group-hover:scale-110" />
+                <span>View My Projects</span>
+              </button>
+
+              <button
+                onClick={() => scrollToSection("contact")}
+                className={`inline-flex items-center justify-center space-x-2 text-sm md:text-xs font-bold uppercase tracking-wider px-8 py-4 md:py-3.5 rounded-xl border backdrop-blur-sm transition-all active:scale-95 ${darkMode
+                  ? "bg-slate-900/80 border-slate-700/80 text-white hover:bg-slate-800 hover:border-emerald-500/50"
+                  : "bg-white/90 border-slate-200/90 text-slate-800 hover:bg-slate-100 hover:border-sky-500/50"
+                  }`}
+              >
+                <Mail className="w-5 h-5 md:w-4 md:h-4" />
+                <span>Contact</span>
+              </button>
             </div>
           </div>
         </section>
 
-        {/* EXPERIENCE SECTION */}
+
+        {/* ABOUT ME DETAILED SECTION */}
+        <section
+          id="about-me"
+          className="p-5 sm:p-12 md:p-16 min-h-[calc(100dvh-56px)] md:min-h-screen flex flex-col justify-center w-full border-b border-slate-200 dark:border-slate-800/80"
+        >
+          <div className="max-w-6xl w-full mx-auto space-y-8 sm:space-y-12">
+            {/* SECTION HEADER */}
+            <div className="space-y-2">
+              <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
+                About Me
+              </h2>
+              <p
+                className={`text-lg sm:text-xl font-bold ${darkMode ? "text-emerald-400" : "text-sky-500"
+                  }`}
+              >
+                Turning curiosity into technology.
+              </p>
+            </div>
+
+            {/* CONTENT & HIGHLIGHTS GRID */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* BIO PARAGRAPHS & DOWNLOAD CV BUTTON */}
+              <div className="lg:col-span-7 space-y-6">
+                <div
+                  className={`space-y-4 text-sm sm:text-base leading-relaxed ${darkMode ? "text-slate-300" : "text-slate-700"
+                    }`}
+                >
+                  <p>
+                    I am a Grade 12 student from Ethiopia with a strong interest in computer science, programming, and technology.
+                  </p>
+                  <p>
+                    I enjoy learning how technology works and creating projects that solve real-world problems. I have explored programming with Python, web development, and software projects.
+                  </p>
+                  <p>
+                    My long-term goal is to study computer science and become a skilled software developer who creates meaningful solutions for people and communities.
+                  </p>
+                </div>
+
+                {/* DOWNLOAD CV BUTTON */}
+                <div className="pt-2">
+                  <a
+                    href={PROFILE_DATA.cvPath}
+                    download
+                    className={`inline-flex items-center justify-center space-x-2.5 text-white text-sm md:text-xs font-bold uppercase tracking-wider px-8 py-4 md:py-3.5 rounded-xl shadow-lg transition-all active:scale-95 group ${darkMode
+                      ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/25"
+                      : "bg-sky-500 hover:bg-sky-600 shadow-sky-500/25"
+                      }`}
+                  >
+                    <Download className="w-5 h-5 md:w-4 md:h-4 transition-transform group-hover:-translate-y-0.5" />
+                    <span>Download CV</span>
+                  </a>
+                </div>
+              </div>
+
+              {/* STATS / HIGHLIGHT CARDS */}
+              <div className="lg:col-span-5 grid grid-cols-2 gap-4">
+                {/* PROJECTS */}
+                <div
+                  className={`p-5 rounded-2xl border flex flex-col justify-between space-y-2 transition-all ${darkMode
+                    ? "bg-slate-900/60 border-slate-800 hover:border-emerald-500/40"
+                    : "bg-white border-slate-200 hover:border-sky-300"
+                    }`}
+                >
+                  <span
+                    className={`text-3xl sm:text-4xl font-black ${darkMode ? "text-emerald-400" : "text-sky-500"
+                      }`}
+                  >
+                    5+
+                  </span>
+                  <span className="text-xs sm:text-sm font-bold uppercase tracking-wider opacity-80">
+                    Projects
+                  </span>
+                </div>
+
+                {/* TECHNOLOGIES */}
+                <div
+                  className={`p-5 rounded-2xl border flex flex-col justify-between space-y-2 transition-all ${darkMode
+                    ? "bg-slate-900/60 border-slate-800 hover:border-emerald-500/40"
+                    : "bg-white border-slate-200 hover:border-sky-300"
+                    }`}
+                >
+                  <span
+                    className={`text-3xl sm:text-4xl font-black ${darkMode ? "text-emerald-400" : "text-sky-500"
+                      }`}
+                  >
+                    3+
+                  </span>
+                  <span className="text-xs sm:text-sm font-bold uppercase tracking-wider opacity-80">
+                    Technologies
+                  </span>
+                </div>
+
+                {/* EDUCATION */}
+                <div
+                  className={`p-5 rounded-2xl border flex flex-col justify-between space-y-2 transition-all ${darkMode
+                    ? "bg-slate-900/60 border-slate-800 hover:border-emerald-500/40"
+                    : "bg-white border-slate-200 hover:border-sky-300"
+                    }`}
+                >
+                  <span
+                    className={`text-2xl sm:text-3xl font-black ${darkMode ? "text-emerald-400" : "text-sky-500"
+                      }`}
+                  >
+                    Grade 12
+                  </span>
+                  <span className="text-xs sm:text-sm font-bold uppercase tracking-wider opacity-80">
+                    Education
+                  </span>
+                </div>
+
+                {/* CURIOSITY */}
+                <div
+                  className={`p-5 rounded-2xl border flex flex-col justify-between space-y-2 transition-all ${darkMode
+                    ? "bg-slate-900/60 border-slate-800 hover:border-emerald-500/40"
+                    : "bg-white border-slate-200 hover:border-sky-300"
+                    }`}
+                >
+                  <span
+                    className={`text-3xl sm:text-4xl font-black ${darkMode ? "text-emerald-400" : "text-sky-500"
+                      }`}
+                  >
+                    ∞
+                  </span>
+                  <span className="text-xs sm:text-sm font-bold uppercase tracking-wider opacity-80">
+                    Curiosity
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        {/* EDUCATION & EXPERIENCE SECTION */}
         <section
           id="experience"
           className="p-5 sm:p-12 md:p-16 min-h-[calc(100dvh-56px)] md:min-h-screen flex flex-col justify-center w-full border-b border-slate-200 dark:border-slate-800/80"
         >
-          <div className="max-w-6xl w-full mx-auto space-y-6 sm:space-y-8">
-            <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
-              Experience
-            </h2>
+          <div className="max-w-6xl w-full mx-auto space-y-8 sm:space-y-12">
+            {/* SECTION HEADER */}
+            <div className="space-y-2">
+              <span
+                className={`text-xs sm:text-sm font-mono font-bold tracking-widest uppercase ${darkMode ? "text-emerald-400" : "text-sky-600"
+                  }`}
+              >
+                MY JOURNEY
+              </span>
+              <h2
+                className={`text-2xl sm:text-4xl font-extrabold uppercase tracking-wider ${darkMode ? "text-white" : "text-slate-900"
+                  }`}
+              >
+                Education &amp; Experience
+              </h2>
+            </div>
 
+            {/* TIMELINE / EXPERIENCE CARDS */}
             <div className="space-y-4 sm:space-y-6">
               {EXPERIENCES.map((exp, idx) => (
                 <div
                   key={idx}
-                  className={`p-6 sm:p-8 rounded-2xl border shadow-sm space-y-3 transition-all ${
-                    darkMode
-                      ? "bg-slate-900/60 border-slate-800 hover:border-emerald-500/50"
-                      : "bg-white border-slate-200 hover:border-sky-300"
-                  }`}
+                  className={`p-6 sm:p-8 rounded-2xl border shadow-sm transition-all duration-300 hover:-translate-y-1 ${darkMode
+                    ? "bg-slate-900/60 border-slate-800 hover:border-emerald-500/40"
+                    : "bg-white border-slate-200 hover:border-sky-300"
+                    }`}
                 >
-                  <div
-                    className={`flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs font-mono font-bold ${
-                      darkMode ? "text-emerald-400" : "text-sky-500"
-                    }`}
-                  >
-                    <span className="text-sm">{exp.company}</span>
-                    <span className="text-slate-400 font-normal sm:font-bold">{exp.period}</span>
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                    <div className="space-y-3 flex-1">
+                      {/* TOP HEADER & PERIOD */}
+                      <div
+                        className={`flex flex-wrap items-center gap-2 text-xs font-mono font-bold ${darkMode ? "text-emerald-400" : "text-sky-600"
+                          }`}
+                      >
+                        <span className="text-sm font-extrabold">{exp.company}</span>
+                        <span className={darkMode ? "text-slate-600" : "text-slate-300"}>
+                          •
+                        </span>
+                        <span
+                          className={darkMode ? "text-slate-400" : "text-slate-500"}
+                        >
+                          {exp.period}
+                        </span>
+                      </div>
+
+                      {/* ROLE TITLE - HIGH VISIBILITY IN BOTH LIGHT & DARK MODES */}
+                      <h3
+                        className={`font-black text-lg sm:text-xl ${darkMode ? "text-slate-100" : "text-slate-950"
+                          }`}
+                      >
+                        {exp.role}
+                      </h3>
+
+                      {/* DESCRIPTION */}
+                      <p
+                        className={`text-sm sm:text-base leading-relaxed ${darkMode ? "text-slate-300" : "text-slate-700 font-medium"
+                          }`}
+                      >
+                        {exp.description}
+                      </p>
+                    </div>
+
+                    {/* SCHOOL LOGO LINK */}
+                    {exp.logo && exp.link && (
+                      <a
+                        href={exp.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`${exp.company} Portal`}
+                        className={`shrink-0 p-2 rounded-2xl border flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 group shadow-md ${darkMode
+                          ? "bg-slate-950 border-slate-800 hover:border-emerald-500/50 shadow-emerald-500/10"
+                          : "bg-slate-50 border-slate-200 hover:border-sky-500/50 shadow-sky-500/10"
+                          }`}
+                      >
+                        <div className="relative w-14 h-14 rounded-xl overflow-hidden">
+                          <Image
+                            src={exp.logo}
+                            alt={`${exp.company} Logo`}
+                            fill
+                            className="object-cover transition-transform duration-300 group-hover:scale-110"
+                          />
+                        </div>
+                      </a>
+                    )}
                   </div>
-                  <h3 className="font-bold text-lg sm:text-xl">{exp.role}</h3>
-                  <p
-                    className={`text-sm sm:text-base leading-relaxed ${
-                      darkMode ? "text-slate-400" : "text-slate-600"
-                    }`}
-                  >
-                    {exp.description}
-                  </p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* PORTFOLIO SECTION */}
+
+        {/* PORTFOLIO / PROJECTS SECTION */}
         <section
           id="portfolio"
           className="p-5 sm:p-12 md:p-16 min-h-[calc(100dvh-56px)] md:min-h-screen flex flex-col justify-center w-full border-b border-slate-200 dark:border-slate-800/80"
         >
-          <div className="max-w-6xl w-full mx-auto space-y-6 sm:space-y-8">
-            <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
-              Portfolio
-            </h2>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
-              {galleryImages.map((imgPath, index) => (
-                <div
-                  key={index}
-                  onClick={() => setSelectedImgIndex(index)}
-                  className={`relative aspect-square rounded-2xl overflow-hidden border cursor-pointer group shadow-sm active:scale-95 transition-transform ${
-                    darkMode ? "border-slate-800 bg-slate-900" : "border-slate-200 bg-slate-100"
+          <div className="max-w-6xl w-full mx-auto space-y-8 sm:space-y-12">
+            {/* SECTION HEADER */}
+            <div className="space-y-2">
+              <span
+                className={`text-xs sm:text-sm font-mono font-bold tracking-widest uppercase ${darkMode ? "text-emerald-400" : "text-sky-500"
                   }`}
-                >
-                  <Image
-                    src={imgPath}
-                    alt={`Project ${index + 1}`}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                  />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Maximize2 className="w-6 h-6 text-white" />
-                  </div>
-                </div>
-              ))}
+              >
+                MY RECENT WORK
+              </span>
+              <h2 className="text-2xl sm:text-4xl font-extrabold uppercase tracking-wider">
+                Featured Projects
+              </h2>
             </div>
-          </div>
-        </section>
 
-        {/* SKILLS SECTION */}
-        <section
-          id="skills"
-          className="p-5 sm:p-12 md:p-16 min-h-[calc(100dvh-56px)] md:min-h-screen flex flex-col justify-center w-full border-b border-slate-200 dark:border-slate-800/80"
-        >
-          <div className="max-w-6xl w-full mx-auto space-y-6 sm:space-y-8">
-            <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
-              Skills
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {SKILL_CATEGORIES.map((cat, idx) => {
-                const Icon = cat.icon;
+            {/* PROJECTS GRID */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {PROJECTS_LIST.map((project) => {
+                const IconComponent = project.icon;
                 return (
                   <div
-                    key={idx}
-                    className={`p-6 sm:p-8 rounded-2xl border shadow-sm space-y-4 ${
-                      darkMode ? "bg-slate-900/60 border-slate-800" : "bg-white border-slate-200"
-                    }`}
+                    key={project.id}
+                    className={`p-6 sm:p-8 rounded-2xl border shadow-sm flex flex-col justify-between space-y-6 transition-all duration-300 hover:-translate-y-1 ${darkMode
+                      ? "bg-slate-900/60 border-slate-800 hover:border-emerald-500/40"
+                      : "bg-white border-slate-200 hover:border-sky-300"
+                      }`}
                   >
-                    <div
-                      className={`p-3 rounded-xl w-fit ${
-                        darkMode ? "bg-emerald-500/10 text-emerald-400" : "bg-sky-500/10 text-sky-500"
-                      }`}
-                    >
-                      <Icon className="w-6 h-6" />
+                    <div className="space-y-4">
+                      {/* TOP BAR: NUMBER & ICON */}
+                      <div className="flex items-center justify-between">
+                        <span
+                          className={`text-2xl font-mono font-black ${darkMode ? "text-slate-600" : "text-slate-300"
+                            }`}
+                        >
+                          {project.id}
+                        </span>
+                        <div
+                          className={`p-3 rounded-xl border ${darkMode
+                            ? "bg-slate-950 border-slate-800 text-emerald-400"
+                            : "bg-slate-50 border-slate-200 text-sky-500"
+                            }`}
+                        >
+                          <IconComponent className="w-6 h-6" />
+                        </div>
+                      </div>
+
+                      {/* TECH TAGS */}
+                      <div className="flex flex-wrap gap-2">
+                        {project.tags.map((tag, tagIdx) => (
+                          <span
+                            key={tagIdx}
+                            className={`px-2.5 py-0.5 rounded-md text-xs font-mono font-bold uppercase tracking-wider ${darkMode
+                              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                              : "bg-sky-500/10 text-sky-600 border border-sky-500/20"
+                              }`}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* TITLE & DESCRIPTION */}
+                      <div className="space-y-2">
+                        <h3 className="text-xl font-extrabold">{project.title}</h3>
+                        <p
+                          className={`text-sm leading-relaxed ${darkMode ? "text-slate-400" : "text-slate-600"
+                            }`}
+                        >
+                          {project.description}
+                        </p>
+                      </div>
                     </div>
-                    <h3 className="font-bold text-lg sm:text-xl">{cat.title}</h3>
-                    <p
-                      className={`text-sm leading-relaxed ${
-                        darkMode ? "text-slate-400" : "text-slate-600"
-                      }`}
-                    >
-                      {cat.skills}
-                    </p>
+
+                    {/* ACTION BUTTONS */}
+                    <div className="flex items-center space-x-3 pt-2">
+                      <a
+                        href={project.github}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={`inline-flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all active:scale-95 ${darkMode
+                          ? "bg-slate-950 border-slate-800 text-slate-200 hover:border-emerald-500/50 hover:text-emerald-400"
+                          : "bg-slate-100 border-slate-200 text-slate-800 hover:border-sky-500/50 hover:text-sky-600"
+                          }`}
+                      >
+                        <FaGithub className="w-4 h-4" />
+                        <span>GitHub</span>
+                      </a>
+
+                      <a
+                        href={project.demo}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={`inline-flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all active:scale-95 text-white shadow-md ${darkMode
+                          ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20"
+                          : "bg-sky-500 hover:bg-sky-600 shadow-sky-500/20"
+                          }`}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        <span>Demo</span>
+                      </a>
+                    </div>
                   </div>
                 );
               })}
             </div>
           </div>
         </section>
-
-        {/* AWARDS SECTION */}
+        {/* SKILLS & EXPERIENCE SECTION */}
         <section
-          id="awards"
+          id="skills"
           className="p-5 sm:p-12 md:p-16 min-h-[calc(100dvh-56px)] md:min-h-screen flex flex-col justify-center w-full border-b border-slate-200 dark:border-slate-800/80"
         >
-          <div className="max-w-6xl w-full mx-auto space-y-6 sm:space-y-8">
-            <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
-              Awards
-            </h2>
+          <div className="max-w-6xl w-full mx-auto space-y-8 sm:space-y-12">
+            {/* SECTION HEADER */}
+            <div className="space-y-2">
+              <span
+                className={`text-xs sm:text-sm font-mono font-bold tracking-widest uppercase ${darkMode ? "text-emerald-400" : "text-sky-500"
+                  }`}
+              >
+                WHAT I WORK WITH
+              </span>
+              <h2 className="text-2xl sm:text-4xl font-extrabold uppercase tracking-wider">
+                My Skills
+              </h2>
+            </div>
+            {/* EAII INTERNSHIP HIGHLIGHT BANNER */}
+            <div
+              className={`p-6 sm:p-8 rounded-2xl border shadow-sm relative overflow-hidden transition-all ${darkMode
+                ? "bg-slate-900/80 border-slate-800 hover:border-emerald-500/40"
+                : "bg-slate-50 border-slate-200 hover:border-sky-300"
+                }`}
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider ${darkMode
+                        ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                        : "bg-sky-500/10 text-sky-600 border border-sky-500/20"
+                        }`}
+                    >
+                      Student Intern
+                    </span>
+                    <span className="text-xs font-mono text-slate-400 font-semibold">
+                      EAII
+                    </span>
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-bold">
+                    Student Intern at Ethiopian Artificial Intelligence Institute (EAII)
+                  </h3>
+                  <p
+                    className={`text-sm leading-relaxed max-w-2xl ${darkMode ? "text-slate-400" : "text-slate-600"
+                      }`}
+                  >
+                    Working as a Machine Learning student intern and building practical software and AI projects to solve real-world problems.
+                  </p>
+                </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {AWARDS.map((award, idx) => (
+                {/* CLICKABLE LOGO LINK */}
+                <a
+                  href="https://aii.et"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Ethiopian Artificial Intelligence Institute Website"
+                  className={`shrink-0 p-2.5 rounded-2xl border flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 group ${darkMode
+                    ? "bg-slate-950 border-slate-800 hover:border-emerald-500/50 shadow-emerald-500/10"
+                    : "bg-white border-slate-200 hover:border-sky-500/50 shadow-sky-500/10"
+                    } shadow-lg`}
+                >
+                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden">
+                    <Image
+                      src="/EAII.jpg"
+                      alt="EAII Logo"
+                      fill
+                      className="object-contain transition-transform duration-300 group-hover:scale-110"
+                    />
+                  </div>
+                </a>
+              </div>
+            </div>
+            {/* SKILLS GRID WITH PROGRESS BARS */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {SKILLS_LIST.map((skill, idx) => (
                 <div
                   key={idx}
-                  className={`p-6 sm:p-8 rounded-2xl border shadow-sm space-y-2 ${
-                    darkMode ? "bg-slate-900/60 border-slate-800" : "bg-white border-slate-200"
-                  }`}
+                  className={`p-6 rounded-2xl border shadow-sm space-y-4 flex flex-col justify-between transition-all duration-200 hover:-translate-y-1 ${darkMode
+                    ? "bg-slate-900/60 border-slate-800 hover:border-slate-700"
+                    : "bg-white border-slate-200 hover:border-slate-300"
+                    }`}
                 >
-                  <span
-                    className={`text-xs font-mono font-bold ${
-                      darkMode ? "text-emerald-400" : "text-sky-500"
-                    }`}
-                  >
-                    {award.year}
-                  </span>
-                  <h3 className="font-bold text-lg sm:text-xl">{award.title}</h3>
-                  <p
-                    className={`text-sm ${
-                      darkMode ? "text-slate-400" : "text-slate-600"
-                    }`}
-                  >
-                    {award.organization}
-                  </p>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-extrabold text-lg sm:text-xl">
+                        {skill.name}
+                      </h3>
+                      <span
+                        className={`text-sm font-mono font-black ${darkMode ? "text-emerald-400" : "text-sky-500"
+                          }`}
+                      >
+                        {skill.level}%
+                      </span>
+                    </div>
+                    <p
+                      className={`text-xs sm:text-sm leading-relaxed ${darkMode ? "text-slate-400" : "text-slate-600"
+                        }`}
+                    >
+                      {skill.description}
+                    </p>
+                  </div>
+
+                  {/* PROGRESS BAR */}
+                  <div className="w-full space-y-1 pt-2">
+                    <div
+                      className={`w-full h-2 rounded-full overflow-hidden ${darkMode ? "bg-slate-800" : "bg-slate-100"
+                        }`}
+                    >
+                      <div
+                        className={`h-full rounded-full transition-all duration-1000 ${darkMode ? "bg-emerald-500" : "bg-sky-500"
+                          }`}
+                        style={{ width: `${skill.level}%` }}
+                      />
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
+        {/* AWARDS & CERTIFICATES SECTION */}
+        <section
+          id="awards"
+          className="p-5 sm:p-12 md:p-16 min-h-[calc(100dvh-56px)] md:min-h-screen flex flex-col justify-center w-full border-b border-slate-200 dark:border-slate-800/80 relative"
+        >
+          <div className="max-w-6xl w-full mx-auto space-y-10 sm:space-y-12">
+
+            {/* SECTION HEADER */}
+            <div className="space-y-2">
+              <span
+                className={`text-xs sm:text-sm font-mono font-bold tracking-widest uppercase ${darkMode ? "text-emerald-400" : "text-sky-500"
+                  }`}
+              >
+                Awards
+              </span>
+              <h2 className="text-2xl sm:text-4xl font-extrabold uppercase tracking-wider">
+                Certificates &amp; Awards
+              </h2>
+            </div>
+
+            {/* FEATURED TOP CERTIFICATES */}
+            <div className="space-y-4">
+              <h3 className="text-xs font-mono font-bold tracking-wider uppercase text-slate-600 dark:text-slate-400">
+                Featured Credentials
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {FEATURED_CERTIFICATES.map((cert, idx) => (
+                  <div
+                    key={cert.id}
+                    className="p-6 sm:p-8 rounded-2xl border shadow-sm flex flex-col justify-between space-y-6 transition-all duration-300 hover:-translate-y-1 bg-white border-slate-200 hover:border-sky-300 dark:bg-slate-900/60 dark:border-slate-800 dark:hover:border-emerald-500/40"
+                  >
+                    <div className="space-y-4">
+                      {/* TOP ROW: LOGO & EXTERNAL LINK */}
+                      <div className="flex items-center justify-between">
+                        <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950">
+                          <Image
+                            src={cert.icon!}
+                            alt={`${cert.organization} Icon`}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        {cert.link && (
+                          <a
+                            href={cert.link}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label={`Visit ${cert.organization}`}
+                            className="p-2.5 rounded-xl border transition-all duration-300 active:scale-95 bg-slate-50 border-slate-200 text-sky-600 hover:border-sky-500/50 dark:bg-slate-950 dark:border-slate-800 dark:text-emerald-400 dark:hover:border-emerald-500/50"
+                          >
+                            <ExternalLink className="w-5 h-5" />
+                          </a>
+                        )}
+                      </div>
+
+                      {/* TITLE & ORGANIZATION */}
+                      <div>
+                        <span className="text-xs font-mono font-bold uppercase tracking-wider text-sky-600 dark:text-emerald-400">
+                          {cert.organization}
+                        </span>
+                        <h4 className="font-black text-lg sm:text-xl mt-1 text-slate-950 dark:text-slate-100">
+                          {cert.title}
+                        </h4>
+                      </div>
+                    </div>
+
+                    {/* PREVIEW IMAGE - CLICK TO OPEN LIGHTBOX */}
+                    <div
+                      onClick={() => setLightboxIndex(idx)}
+                      className="relative w-full h-48 sm:h-56 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 group cursor-pointer"
+                    >
+                      <Image
+                        src={cert.image}
+                        alt={cert.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-mono text-xs gap-2">
+                        <span>Click to View Fullscreen</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* CERTIFICATE GALLERY GRID (c1.jpg to c19.jpg) */}
+            <div className="space-y-4 pt-4">
+              <h3 className="text-xs font-mono font-bold tracking-wider uppercase text-slate-600 dark:text-slate-400">
+                All Certifications ({CERTIFICATE_GALLERY.length})
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
+                {CERTIFICATE_GALLERY.map((item, galleryIdx) => {
+                  const absoluteIndex = FEATURED_CERTIFICATES.length + galleryIdx;
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => setLightboxIndex(absoluteIndex)}
+                      className="group p-3 rounded-2xl border shadow-sm transition-all duration-300 hover:-translate-y-1 bg-white border-slate-200 hover:border-sky-300 dark:bg-slate-900/60 dark:border-slate-800 dark:hover:border-emerald-500/40 cursor-pointer"
+                    >
+                      <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800/80 bg-slate-100 dark:bg-slate-950">
+                        <Image
+                          src={item.image}
+                          alt={item.title}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      </div>
+                      <div className="mt-2.5 px-1 flex items-center justify-between">
+                        <span className="text-xs font-mono font-bold text-slate-800 dark:text-slate-300">
+                          {item.title}
+                        </span>
+                        <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-sky-600 dark:bg-slate-800 dark:text-emerald-400">
+                          Verified
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* FULL-SCREEN LIGHTBOX MODAL */}
+          {lightboxIndex !== null && activeCert && (
+            <div
+              onClick={() => setLightboxIndex(null)}
+              className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-6"
+            >
+              {/* TOP CONTROLS */}
+              <div className="absolute top-4 sm:top-6 left-4 sm:left-8 right-4 sm:right-8 flex items-center justify-between text-white z-10">
+                <div className="flex items-center gap-3">
+                  <span className="font-mono text-xs sm:text-sm bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700">
+                    {lightboxIndex + 1} / {ALL_CERTIFICATES.length}
+                  </span>
+                  <span className="hidden sm:inline font-mono text-xs text-slate-400">
+                    {activeCert.organization} — {activeCert.title}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setLightboxIndex(null)}
+                  aria-label="Close modal"
+                  className="p-2.5 rounded-full bg-slate-800/80 hover:bg-slate-700 text-white border border-slate-700 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* PREVIOUS BUTTON */}
+              <button
+                onClick={handlePrev}
+                aria-label="Previous image"
+                className="absolute left-3 sm:left-6 p-3 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white border border-slate-700 transition-all hover:scale-110 z-10"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+
+              {/* LIGHTBOX IMAGE CONTAINER */}
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="relative w-full max-w-4xl h-[75vh] sm:h-[80vh] rounded-2xl overflow-hidden border border-slate-800 bg-slate-900 shadow-2xl flex items-center justify-center"
+              >
+                <Image
+                  src={activeCert.image}
+                  alt={activeCert.title}
+                  fill
+                  className="object-contain p-2"
+                  priority
+                />
+              </div>
+
+              {/* NEXT BUTTON */}
+              <button
+                onClick={handleNext}
+                aria-label="Next image"
+                className="absolute right-3 sm:right-6 p-3 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white border border-slate-700 transition-all hover:scale-110 z-10"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </div>
+          )}
+        </section>
+
         {/* CONTACT SECTION */}
         <section
           id="contact"
-          className="p-5 sm:p-12 md:p-16 min-h-[calc(100dvh-56px)] md:min-h-screen flex flex-col justify-center w-full"
+          className="p-5 sm:p-12 md:p-16 min-h-[calc(100dvh-56px)] md:min-h-screen flex flex-col justify-center w-full border-b border-slate-200 dark:border-slate-800/80"
         >
-          <div className="max-w-2xl w-full mx-auto space-y-6 sm:space-y-8">
-            <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
-              Contact
-            </h2>
+          <div className="max-w-6xl w-full mx-auto space-y-10 sm:space-y-12">
 
-            <form onSubmit={handleFormSubmit} className="space-y-4">
-              <div>
-                <input
-                  type="text"
-                  placeholder="Your Name"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className={`w-full p-4 rounded-xl border text-sm outline-none transition-colors ${
-                    darkMode
-                      ? "bg-slate-900/80 border-slate-800 text-white focus:border-emerald-500"
-                      : "bg-slate-50 border-slate-200 text-slate-900 focus:border-sky-500"
+            {/* SECTION HEADER */}
+            <div className="space-y-2">
+              <span
+                className={`text-xs sm:text-sm font-mono font-bold tracking-widest uppercase ${darkMode ? "text-emerald-400" : "text-sky-500"
                   }`}
-                />
-              </div>
-
-              <div>
-                <input
-                  type="email"
-                  placeholder="Your Email"
-                  required
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className={`w-full p-4 rounded-xl border text-sm outline-none transition-colors ${
-                    darkMode
-                      ? "bg-slate-900/80 border-slate-800 text-white focus:border-emerald-500"
-                      : "bg-slate-50 border-slate-200 text-slate-900 focus:border-sky-500"
-                  }`}
-                />
-              </div>
-
-              <div>
-                <textarea
-                  rows={5}
-                  placeholder="Your Message"
-                  required
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className={`w-full p-4 rounded-xl border text-sm outline-none transition-colors resize-none ${
-                    darkMode
-                      ? "bg-slate-900/80 border-slate-800 text-white focus:border-emerald-500"
-                      : "bg-slate-50 border-slate-200 text-slate-900 focus:border-sky-500"
-                  }`}
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={`w-full flex items-center justify-center space-x-2 p-4 rounded-xl font-bold text-sm text-white transition-all active:scale-95 ${
-                  darkMode ? "bg-emerald-500 hover:bg-emerald-600" : "bg-sky-500 hover:bg-sky-600"
-                }`}
               >
-                {isSubmitting ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <>
-                    <Send className="w-4 h-4" />
-                    <span>Send Message</span>
-                  </>
-                )}
-              </button>
+                Get In Touch
+              </span>
+              <h2 className="text-2xl sm:text-4xl font-extrabold uppercase tracking-wider">
+                Let&apos;s Connect
+              </h2>
+              <p className={`text-sm sm:text-base max-w-xl leading-relaxed ${darkMode ? "text-slate-400" : "text-slate-600"}`}>
+                Have a question, collaboration proposal, or project idea? Send a message below or connect directly.
+              </p>
+            </div>
 
-              {formSubmitted && (
-                <div className="flex items-center space-x-2 text-emerald-500 text-sm font-semibold">
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Message sent successfully!</span>
+            {/* CONTACT CONTENT GRID */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+              {/* LEFT: DIRECT INFO & SOCIALS */}
+              <div className="lg:col-span-5 space-y-6">
+
+                {/* INFO CARD */}
+                <div
+                  className={`p-6 sm:p-8 rounded-2xl border shadow-sm space-y-6 ${darkMode
+                    ? "bg-slate-900/60 border-slate-800"
+                    : "bg-white border-slate-200"
+                    }`}
+                >
+                  <h3 className="text-xs font-mono font-bold tracking-wider uppercase text-slate-600 dark:text-slate-400">
+                    Direct Channels
+                  </h3>
+
+                  <div className="space-y-4">
+                    {/* LOCATION */}
+                    <div className="flex items-start space-x-4">
+                      <div
+                        className={`p-3 rounded-xl border shrink-0 ${darkMode
+                          ? "bg-slate-950 border-slate-800 text-emerald-400"
+                          : "bg-slate-50 border-slate-200 text-sky-600"
+                          }`}
+                      >
+                        <MapPin className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <span className="text-xs font-mono text-slate-500 font-semibold block">Location</span>
+                        <span className="font-bold text-sm sm:text-base text-slate-950 dark:text-slate-200">
+                          Addis Ababa, Ethiopia
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* EMAIL */}
+                    <div className="flex items-start space-x-4">
+                      <div
+                        className={`p-3 rounded-xl border shrink-0 ${darkMode
+                          ? "bg-slate-950 border-slate-800 text-emerald-400"
+                          : "bg-slate-50 border-slate-200 text-sky-600"
+                          }`}
+                      >
+                        <Mail className="w-5 h-5" />
+                      </div>
+                      <div className="overflow-hidden">
+                        <span className="text-xs font-mono text-slate-500 font-semibold block">Email</span>
+                        <a
+                          href="mailto:zidoscar16@gmail.com"
+                          className="font-bold text-sm sm:text-base text-slate-950 dark:text-slate-200 hover:underline break-all"
+                        >
+                          zidoscar16@gmail.com
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* PHONE / WHATSAPP */}
+                    <div className="flex items-start space-x-4">
+                      <div
+                        className={`p-3 rounded-xl border shrink-0 ${darkMode
+                          ? "bg-slate-950 border-slate-800 text-emerald-400"
+                          : "bg-slate-50 border-slate-200 text-sky-600"
+                          }`}
+                      >
+                        <Phone className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <span className="text-xs font-mono text-slate-500 font-semibold block">Phone / WhatsApp</span>
+                        <a
+                          href="https://wa.me/251930417397"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-bold text-sm sm:text-base text-slate-950 dark:text-slate-200 hover:underline"
+                        >
+                          +251 930 417 397
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SOCIAL PROFILES */}
+                  <div className="pt-4 border-t border-slate-200 dark:border-slate-800/80 space-y-3">
+                    <h4 className="text-xs font-mono font-bold tracking-wider uppercase text-slate-600 dark:text-slate-400">
+                      Social Profiles
+                    </h4>
+                    <div className="flex flex-wrap gap-3">
+                      <a
+                        href="https://web.facebook.com/zd.rich.1?rdid=xYD2khrCNTJyDt8h&share_url=https%3A%2F%2Fweb.facebook.com%2Fshare%2F19LiPiohzh%2F%3F_rdc%3D1%26_rdr#"
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label="Facebook"
+                        className={`p-3 rounded-xl border transition-all duration-300 hover:scale-105 active:scale-95 ${darkMode
+                          ? "bg-slate-950 border-slate-800 text-slate-300 hover:border-emerald-500/50 hover:text-emerald-400"
+                          : "bg-slate-50 border-slate-200 text-slate-900 hover:border-sky-500/50 hover:text-sky-600"
+                          }`}
+                      >
+                        <FaFacebook className="w-5 h-5" />
+                      </a>
+                      <a
+                        href="https://github.com"
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label="GitHub"
+                        className={`p-3 rounded-xl border transition-all duration-300 hover:scale-105 active:scale-95 ${darkMode
+                          ? "bg-slate-950 border-slate-800 text-slate-300 hover:border-emerald-500/50 hover:text-emerald-400"
+                          : "bg-slate-50 border-slate-200 text-slate-900 hover:border-sky-500/50 hover:text-sky-600"
+                          }`}
+                      >
+                        <FaGithub className="w-5 h-5" />
+                      </a>
+                      <a
+                        href="https://linkedin.com"
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label="LinkedIn"
+                        className={`p-3 rounded-xl border transition-all duration-300 hover:scale-105 active:scale-95 ${darkMode
+                          ? "bg-slate-950 border-slate-800 text-slate-300 hover:border-emerald-500/50 hover:text-emerald-400"
+                          : "bg-slate-50 border-slate-200 text-slate-900 hover:border-sky-500/50 hover:text-sky-600"
+                          }`}
+                      >
+                        <FaLinkedin className="w-5 h-5" />
+                      </a>
+                    </div>
+                  </div>
+
                 </div>
-              )}
-            </form>
+              </div>
+
+              {/* RIGHT: CONTACT FORM */}
+              <div className="lg:col-span-7">
+                <form
+                  onSubmit={handleFormSubmit}
+                  className={`p-6 sm:p-8 rounded-2xl border shadow-sm space-y-5 ${darkMode
+                    ? "bg-slate-900/60 border-slate-800"
+                    : "bg-white border-slate-200"
+                    }`}
+                >
+                  <h3 className="text-xs font-mono font-bold tracking-wider uppercase text-slate-600 dark:text-slate-400">
+                    Send a Message
+                  </h3>
+
+                  <div className="space-y-4">
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Your Name"
+                        required
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className={`w-full p-4 rounded-xl border text-sm outline-none transition-colors ${darkMode
+                          ? "bg-slate-950 border-slate-800 text-white focus:border-emerald-500"
+                          : "bg-slate-50 border-slate-300 text-slate-950 placeholder:text-slate-500 focus:border-sky-600"
+                          }`}
+                      />
+                    </div>
+
+                    <div>
+                      <input
+                        type="email"
+                        placeholder="Your Email"
+                        required
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        className={`w-full p-4 rounded-xl border text-sm outline-none transition-colors ${darkMode
+                          ? "bg-slate-950 border-slate-800 text-white focus:border-emerald-500"
+                          : "bg-slate-50 border-slate-300 text-slate-950 placeholder:text-slate-500 focus:border-sky-600"
+                          }`}
+                      />
+                    </div>
+
+                    <div>
+                      <textarea
+                        rows={5}
+                        placeholder="Your Message"
+                        required
+                        value={formData.message}
+                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        className={`w-full p-4 rounded-xl border text-sm outline-none transition-colors resize-none ${darkMode
+                          ? "bg-slate-950 border-slate-800 text-white focus:border-emerald-500"
+                          : "bg-slate-50 border-slate-300 text-slate-950 placeholder:text-slate-500 focus:border-sky-600"
+                          }`}
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className={`w-full flex items-center justify-center space-x-2 p-4 rounded-xl font-bold text-sm text-white transition-all active:scale-95 shadow-lg ${darkMode
+                      ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20"
+                      : "bg-sky-600 hover:bg-sky-700 shadow-sky-600/20"
+                      }`}
+                  >
+                    {isSubmitting ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        <span>Send Message</span>
+                      </>
+                    )}
+                  </button>
+
+                  {formSubmitted && (
+                    <div className="flex items-center space-x-2 text-emerald-600 text-sm font-semibold pt-1">
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>Message sent successfully!</span>
+                    </div>
+                  )}
+                </form>
+              </div>
+
+            </div>
           </div>
         </section>
       </main>
