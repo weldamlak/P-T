@@ -201,16 +201,17 @@ export default function Portfolio() {
 
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      // Adjusted offset for mobile header
+      const yOffset = -60; 
+      const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
     }
 
-    // Release scroll guard after smooth scroll animation completes
     setTimeout(() => {
       isProgrammaticScroll.current = false;
     }, 800);
   }, []);
 
-  // Sync scroll lock for mobile menu
   useEffect(() => {
     document.body.style.overflow = mobileMenuOpen ? "hidden" : "unset";
   }, [mobileMenuOpen]);
@@ -238,7 +239,7 @@ export default function Portfolio() {
           setActiveTab(visibleSection);
         }
       },
-      { root: mainContainer, threshold: [0.2, 0.5, 0.8] }
+      { root: null, rootMargin: "-20% 0px -60% 0px", threshold: [0.1, 0.5] } // Adjusted for window scroll
     );
 
     NAV_ITEMS.forEach((item) => {
@@ -345,34 +346,8 @@ export default function Portfolio() {
             {PROFILE_DATA.surname}
           </span>
         </span>
+        
         <div className="flex items-center gap-1.5">
-          <a
-            href={PROFILE_DATA.socials.linkedin}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="LinkedIn"
-            className={`p-2.5 rounded-xl border transition-all active:scale-95 ${
-              darkMode
-                ? "border-slate-800 bg-slate-900/60 text-slate-300 active:text-emerald-400"
-                : "border-slate-200 bg-slate-50 text-slate-600 active:text-sky-600"
-            }`}
-          >
-            <FaLinkedinIn className="w-4 h-4" />
-          </a>
-          <a
-            href={PROFILE_DATA.socials.github}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="GitHub"
-            className={`p-2.5 rounded-xl border transition-all active:scale-95 ${
-              darkMode
-                ? "border-slate-800 bg-slate-900/60 text-slate-300 active:text-emerald-400"
-                : "border-slate-200 bg-slate-50 text-slate-600 active:text-sky-600"
-            }`}
-          >
-            <FaGithub className="w-4 h-4" />
-          </a>
-
           {/* MOBILE THEME TOGGLE BUTTON */}
           <button
             onClick={toggleThemeWithRipple}
@@ -617,12 +592,12 @@ export default function Portfolio() {
       <main
         ref={mainContainerRef}
         id="main-content"
-        className="flex-1 h-full min-h-[100dvh] md:min-h-0 overflow-y-auto pt-14 md:pt-0 scroll-smooth"
+        className="flex-1 h-full min-h-[100dvh] md:min-h-0 overflow-y-auto pt-[56px] md:pt-0 scroll-smooth w-full"
       >
         {/* HERO / ABOUT SECTION */}
         <section
           id="about"
-          className="relative min-h-[100dvh] flex items-center justify-start overflow-hidden border-b border-slate-200 dark:border-slate-800/80 px-5 sm:px-12 md:px-16 py-12 sm:py-16"
+          className="relative min-h-[calc(100dvh-56px)] md:min-h-[100dvh] flex items-center justify-start overflow-hidden border-b border-slate-200 dark:border-slate-800/80 px-5 sm:px-12 md:px-16 py-12 sm:py-16"
         >
           <div className="absolute inset-0 z-0">
             <Image
@@ -636,15 +611,32 @@ export default function Portfolio() {
             <div
               className={`absolute inset-0 transition-colors duration-300 ${
                 darkMode
-                  ? "bg-gradient-to-r from-slate-950/95 via-slate-950/80 to-slate-950/40 sm:to-transparent"
-                  : "bg-gradient-to-r from-slate-950/90 via-slate-950/70 to-slate-950/30 sm:to-transparent"
+                  ? "bg-gradient-to-t md:bg-gradient-to-r from-slate-950/95 via-slate-950/80 to-slate-950/50 sm:to-transparent"
+                  : "bg-gradient-to-t md:bg-gradient-to-r from-slate-900/90 via-slate-900/70 to-slate-900/40 sm:to-transparent"
               }`}
             />
           </div>
 
-          <div className="relative z-10 max-w-3xl space-y-5 text-white my-auto">
+          <div className="relative z-10 max-w-3xl space-y-6 text-white my-auto pt-6 md:pt-0">
+            {/* MOBILE ONLY AVATAR IN FRONT */}
+            <div className="md:hidden">
+              <div
+                className={`relative w-28 h-28 rounded-full overflow-hidden border-4 shadow-xl mb-4 ${
+                  darkMode ? "border-emerald-500/40" : "border-sky-500/40"
+                }`}
+              >
+                <Image
+                  src={PROFILE_DATA.avatar}
+                  alt={PROFILE_DATA.name}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            </div>
+
             <div className="space-y-1.5">
-              <h1 className="text-3xl xs:text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight uppercase leading-tight text-slate-100 drop-shadow-md">
+              <h1 className="text-4xl xs:text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight uppercase leading-tight text-slate-100 drop-shadow-md">
                 {PROFILE_DATA.name}{" "}
                 <span className={darkMode ? "text-emerald-400 font-black" : "text-sky-400 font-black"}>
                   {PROFILE_DATA.surname}
@@ -659,76 +651,76 @@ export default function Portfolio() {
               </p>
             </div>
 
-            <p className="text-slate-200 leading-relaxed text-xs sm:text-base drop-shadow-sm max-w-2xl">
+            <p className="text-slate-200 leading-relaxed text-sm sm:text-base drop-shadow-sm max-w-2xl">
               {PROFILE_DATA.bio}
             </p>
 
-            <div className="flex items-center gap-2.5 pt-1">
+            <div className="flex items-center gap-3 pt-1">
               <a
                 href={PROFILE_DATA.socials.linkedin}
                 target="_blank"
                 rel="noreferrer"
                 aria-label="LinkedIn"
-                className={`w-11 h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${
+                className={`w-12 h-12 md:w-11 md:h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${
                   darkMode
                     ? "hover:bg-emerald-500 hover:border-emerald-500 hover:text-white"
                     : "hover:bg-sky-500 hover:border-sky-500 hover:text-white"
                 }`}
               >
-                <FaLinkedinIn className="w-4 h-4" />
+                <FaLinkedinIn className="w-5 h-5 md:w-4 md:h-4" />
               </a>
               <a
                 href={PROFILE_DATA.socials.github}
                 target="_blank"
                 rel="noreferrer"
                 aria-label="GitHub"
-                className={`w-11 h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${
+                className={`w-12 h-12 md:w-11 md:h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${
                   darkMode
                     ? "hover:bg-emerald-500 hover:border-emerald-500 hover:text-white"
                     : "hover:bg-sky-500 hover:border-sky-500 hover:text-white"
                 }`}
               >
-                <FaGithub className="w-4 h-4" />
+                <FaGithub className="w-5 h-5 md:w-4 md:h-4" />
               </a>
               <a
                 href={PROFILE_DATA.socials.telegram}
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Telegram"
-                className={`w-11 h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${
+                className={`w-12 h-12 md:w-11 md:h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${
                   darkMode
                     ? "hover:bg-emerald-500 hover:border-emerald-500 hover:text-white"
                     : "hover:bg-sky-500 hover:border-sky-500 hover:text-white"
                 }`}
               >
-                <FaTelegram className="w-4 h-4" />
+                <FaTelegram className="w-5 h-5 md:w-4 md:h-4" />
               </a>
               <a
                 href={PROFILE_DATA.socials.twitter}
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Twitter"
-                className={`w-11 h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${
+                className={`w-12 h-12 md:w-11 md:h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${
                   darkMode
                     ? "hover:bg-emerald-500 hover:border-emerald-500 hover:text-white"
                     : "hover:bg-sky-500 hover:border-sky-500 hover:text-white"
                 }`}
               >
-                <FaXTwitter className="w-4 h-4" />
+                <FaXTwitter className="w-5 h-5 md:w-4 md:h-4" />
               </a>
             </div>
 
-            <div className="pt-2">
+            <div className="pt-4">
               <a
                 href={PROFILE_DATA.cvPath}
                 download
-                className={`w-full sm:w-auto inline-flex items-center justify-center space-x-2 text-white text-xs font-bold uppercase tracking-wider px-7 py-3.5 rounded-xl shadow-lg transition-all active:scale-95 ${
+                className={`w-full sm:w-auto inline-flex items-center justify-center space-x-2 text-white text-sm md:text-xs font-bold uppercase tracking-wider px-8 py-4 md:py-3.5 rounded-xl shadow-lg transition-all active:scale-95 ${
                   darkMode
                     ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/25"
                     : "bg-sky-500 hover:bg-sky-600 shadow-sky-500/25"
                 }`}
               >
-                <Download className="w-4 h-4" />
+                <Download className="w-5 h-5 md:w-4 md:h-4" />
                 <span>Download CV</span>
               </a>
             </div>
@@ -748,7 +740,7 @@ export default function Portfolio() {
             {EXPERIENCES.map((exp, idx) => (
               <div
                 key={idx}
-                className={`p-4 sm:p-6 rounded-2xl border shadow-sm space-y-1.5 sm:space-y-2 transition-all ${
+                className={`p-5 sm:p-6 rounded-2xl border shadow-sm space-y-2 transition-all ${
                   darkMode
                     ? "bg-slate-900/60 border-slate-800 hover:border-emerald-500/50"
                     : "bg-white border-slate-200 hover:border-sky-300"
@@ -764,7 +756,7 @@ export default function Portfolio() {
                 </div>
                 <h3 className="font-bold text-base sm:text-lg">{exp.role}</h3>
                 <p
-                  className={`text-xs sm:text-sm leading-relaxed ${
+                  className={`text-sm leading-relaxed ${
                     darkMode ? "text-slate-400" : "text-slate-600"
                   }`}
                 >
@@ -811,38 +803,30 @@ export default function Portfolio() {
         {/* SKILLS SECTION */}
         <section
           id="skills"
-          className="p-5 sm:p-12 md:p-16 space-y-6 sm:space-y-8 border-b border-slate-200 dark:border-slate-800/80"
+          className="p-5 sm:p-12 md:p-16 max-w-5xl space-y-6 sm:space-y-8 border-b border-slate-200 dark:border-slate-800/80"
         >
           <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
             Skills
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {SKILL_CATEGORIES.map((cat, idx) => {
               const Icon = cat.icon;
               return (
                 <div
                   key={idx}
-                  className={`p-6 rounded-2xl border space-y-3 ${
+                  className={`p-5 sm:p-6 rounded-2xl border shadow-sm space-y-3 transition-all ${
                     darkMode
-                      ? "bg-slate-900/60 border-slate-800"
-                      : "bg-white border-slate-200"
+                      ? "bg-slate-900/60 border-slate-800 hover:border-emerald-500/50"
+                      : "bg-white border-slate-200 hover:border-sky-300"
                   }`}
                 >
-                  <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                      darkMode
-                        ? "bg-emerald-500/10 text-emerald-400"
-                        : "bg-sky-500/10 text-sky-500"
-                    }`}
-                  >
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                    darkMode ? "bg-emerald-500/10 text-emerald-400" : "bg-sky-500/10 text-sky-500"
+                  }`}>
                     <Icon className="w-5 h-5" />
                   </div>
                   <h3 className="font-bold text-base">{cat.title}</h3>
-                  <p
-                    className={`text-xs sm:text-sm leading-relaxed ${
-                      darkMode ? "text-slate-400" : "text-slate-600"
-                    }`}
-                  >
+                  <p className={`text-sm leading-relaxed ${darkMode ? "text-slate-400" : "text-slate-600"}`}>
                     {cat.skills}
                   </p>
                 </div>
@@ -854,36 +838,32 @@ export default function Portfolio() {
         {/* AWARDS SECTION */}
         <section
           id="awards"
-          className="p-5 sm:p-12 md:p-16 space-y-6 sm:space-y-8 border-b border-slate-200 dark:border-slate-800/80"
+          className="p-5 sm:p-12 md:p-16 max-w-4xl space-y-6 sm:space-y-8 border-b border-slate-200 dark:border-slate-800/80"
         >
           <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
             Awards
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-4">
             {AWARDS.map((award, idx) => (
               <div
                 key={idx}
-                className={`p-6 rounded-2xl border space-y-2 ${
+                className={`p-4 sm:p-5 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-sm transition-all ${
                   darkMode
-                    ? "bg-slate-900/60 border-slate-800"
-                    : "bg-white border-slate-200"
+                    ? "bg-slate-900/60 border-slate-800 hover:border-emerald-500/50"
+                    : "bg-white border-slate-200 hover:border-sky-300"
                 }`}
               >
-                <div
-                  className={`text-xs font-mono font-bold ${
-                    darkMode ? "text-emerald-400" : "text-sky-500"
-                  }`}
-                >
+                <div>
+                  <h3 className="font-bold text-base">{award.title}</h3>
+                  <p className={`text-sm ${darkMode ? "text-slate-400" : "text-slate-600"}`}>
+                    {award.organization}
+                  </p>
+                </div>
+                <div className={`px-3 py-1 rounded-full text-xs font-bold w-fit ${
+                  darkMode ? "bg-emerald-500/10 text-emerald-400" : "bg-sky-500/10 text-sky-500"
+                }`}>
                   {award.year}
                 </div>
-                <h3 className="font-bold text-base">{award.title}</h3>
-                <p
-                  className={`text-xs sm:text-sm ${
-                    darkMode ? "text-slate-400" : "text-slate-600"
-                  }`}
-                >
-                  {award.organization}
-                </p>
               </div>
             ))}
           </div>
@@ -892,7 +872,7 @@ export default function Portfolio() {
         {/* CONTACT SECTION */}
         <section
           id="contact"
-          className="p-5 sm:p-12 md:p-16 space-y-6 sm:space-y-8 max-w-3xl"
+          className="p-5 sm:p-12 md:p-16 max-w-3xl space-y-6 sm:space-y-8 pb-24"
         >
           <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
             Contact
@@ -901,69 +881,58 @@ export default function Portfolio() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <input
                 type="text"
-                placeholder="Your Name"
+                placeholder="Name"
                 required
                 value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                className={`p-3.5 rounded-xl border text-sm outline-none transition-colors ${
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className={`w-full px-4 py-3.5 rounded-xl border outline-none transition-all ${
                   darkMode
-                    ? "bg-slate-900 border-slate-800 focus:border-emerald-500"
-                    : "bg-slate-50 border-slate-200 focus:border-sky-500"
+                    ? "bg-slate-900/60 border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 placeholder:text-slate-500"
+                    : "bg-slate-50 border-slate-200 focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 placeholder:text-slate-400"
                 }`}
               />
               <input
                 type="email"
-                placeholder="Your Email"
+                placeholder="Email"
                 required
                 value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                className={`p-3.5 rounded-xl border text-sm outline-none transition-colors ${
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className={`w-full px-4 py-3.5 rounded-xl border outline-none transition-all ${
                   darkMode
-                    ? "bg-slate-900 border-slate-800 focus:border-emerald-500"
-                    : "bg-slate-50 border-slate-200 focus:border-sky-500"
+                    ? "bg-slate-900/60 border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 placeholder:text-slate-500"
+                    : "bg-slate-50 border-slate-200 focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 placeholder:text-slate-400"
                 }`}
               />
             </div>
             <textarea
-              placeholder="Your Message"
-              rows={5}
+              placeholder="Your Message..."
               required
+              rows={5}
               value={formData.message}
-              onChange={(e) =>
-                setFormData({ ...formData, message: e.target.value })
-              }
-              className={`w-full p-3.5 rounded-xl border text-sm outline-none transition-colors resize-none ${
+              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+              className={`w-full px-4 py-3.5 rounded-xl border outline-none resize-none transition-all ${
                 darkMode
-                  ? "bg-slate-900 border-slate-800 focus:border-emerald-500"
-                  : "bg-slate-50 border-slate-200 focus:border-sky-500"
+                  ? "bg-slate-900/60 border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 placeholder:text-slate-500"
+                  : "bg-slate-50 border-slate-200 focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 placeholder:text-slate-400"
               }`}
             />
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`inline-flex items-center justify-center space-x-2 text-white text-xs font-bold uppercase tracking-wider px-6 py-3.5 rounded-xl shadow-lg transition-all active:scale-95 disabled:opacity-50 ${
+              className={`w-full sm:w-auto inline-flex items-center justify-center space-x-2 text-white font-bold uppercase tracking-wider px-8 py-4 rounded-xl shadow-lg transition-all active:scale-95 disabled:opacity-70 ${
                 darkMode
                   ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/25"
                   : "bg-sky-500 hover:bg-sky-600 shadow-sky-500/25"
               }`}
             >
               {isSubmitting ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-5 h-5 animate-spin" />
               ) : formSubmitted ? (
-                <>
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Sent Successfully</span>
-                </>
+                <CheckCircle2 className="w-5 h-5" />
               ) : (
-                <>
-                  <Send className="w-4 h-4" />
-                  <span>Send Message</span>
-                </>
+                <Send className="w-5 h-5" />
               )}
+              <span>{formSubmitted ? "Sent!" : "Send Message"}</span>
             </button>
           </form>
         </section>
@@ -976,41 +945,36 @@ export default function Portfolio() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4"
-            onClick={() => setSelectedImgIndex(null)}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-sm"
           >
             <button
               onClick={() => setSelectedImgIndex(null)}
-              className="absolute top-4 right-4 p-2 text-white/80 hover:text-white rounded-full bg-white/10"
+              className="absolute top-6 right-6 z-50 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
             >
               <X className="w-6 h-6" />
             </button>
+
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handlePrevImage();
-              }}
-              className="absolute left-4 p-2 text-white/80 hover:text-white rounded-full bg-white/10"
+              onClick={handlePrevImage}
+              className="absolute left-4 md:left-12 z-50 p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
-            <div
-              className="relative w-full max-w-4xl aspect-square max-h-[80vh]"
-              onClick={(e) => e.stopPropagation()}
-            >
+
+            <div className="relative w-full max-w-4xl max-h-[85vh] aspect-video md:aspect-auto md:h-[80vh] mx-4">
               <Image
                 src={galleryImages[selectedImgIndex]}
-                alt={`Portfolio ${selectedImgIndex + 1}`}
+                alt={`Expanded Project ${selectedImgIndex + 1}`}
                 fill
                 className="object-contain"
+                sizes="100vw"
+                priority
               />
             </div>
+
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleNextImage();
-              }}
-              className="absolute right-4 p-2 text-white/80 hover:text-white rounded-full bg-white/10"
+              onClick={handleNextImage}
+              className="absolute right-4 md:right-12 z-50 p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
             >
               <ChevronRight className="w-6 h-6" />
             </button>
