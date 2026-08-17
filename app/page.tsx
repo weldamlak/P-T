@@ -83,7 +83,7 @@ const EXPERIENCES = [
     period: "2024 – 2026",
     description:
       "Completed secondary education with a strong interest in Mathematics, Physics, Chemistry, technology and computer science.",
-    logo: "/School.jpg",
+    logo: "/school.jpg",
     link: "https://addisketema.sims.addislearning.edu.et/",
   },
   {
