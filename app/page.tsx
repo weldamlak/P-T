@@ -120,7 +120,7 @@ export default function Portfolio() {
 
   const galleryImages = useMemo(() => Array.from({ length: 8 }, (_, i) => `/${i + 1}.jpg`), []);
 
-  // --- OPTIMIZED RIPPLE THEME TOGGLE WITH REQUESTANIMATIONFRAME ---
+  // --- DYNAMIC POSITION-AWARE RIPPLE THEME TOGGLE ---
   const toggleThemeWithRipple = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       if (typeof window === "undefined") return;
@@ -129,8 +129,18 @@ export default function Portfolio() {
         navigator.vibrate(15);
       }
 
-      const x = e.clientX;
-      const y = e.clientY;
+      // Calculate center of clicked element dynamically
+      let x = window.innerWidth / 2;
+      let y = window.innerHeight / 2;
+
+      if (e && e.currentTarget) {
+        const rect = e.currentTarget.getBoundingClientRect();
+        x = rect.left + rect.width / 2;
+        y = rect.top + rect.height / 2;
+      } else if (e && typeof e.clientX === "number" && (e.clientX !== 0 || e.clientY !== 0)) {
+        x = e.clientX;
+        y = e.clientY;
+      }
 
       const endRadius = Math.hypot(
         Math.max(x, window.innerWidth - x),
@@ -201,10 +211,7 @@ export default function Portfolio() {
 
     const element = document.getElementById(id);
     if (element) {
-      // Adjusted offset for mobile header
-      const yOffset = -60; 
-      const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
-      window.scrollTo({ top: y, behavior: 'smooth' });
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     setTimeout(() => {
@@ -216,38 +223,50 @@ export default function Portfolio() {
     document.body.style.overflow = mobileMenuOpen ? "hidden" : "unset";
   }, [mobileMenuOpen]);
 
-  // --- ACCURATE INTERSECTION OBSERVER ---
+  // --- ACCURATE DUAL INTERSECTION OBSERVER ---
   useEffect(() => {
     const mainContainer = mainContainerRef.current;
-    if (!mainContainer) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (isProgrammaticScroll.current) return;
+    const handleIntersect = (entries: IntersectionObserverEntry[]) => {
+      if (isProgrammaticScroll.current) return;
 
-        let maxRatio = 0;
-        let visibleSection: NavTab | null = null;
+      let maxRatio = 0;
+      let visibleSection: NavTab | null = null;
 
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
-            maxRatio = entry.intersectionRatio;
-            visibleSection = entry.target.id as NavTab;
-          }
-        });
-
-        if (visibleSection) {
-          setActiveTab(visibleSection);
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
+          maxRatio = entry.intersectionRatio;
+          visibleSection = entry.target.id as NavTab;
         }
-      },
-      { root: null, rootMargin: "-20% 0px -60% 0px", threshold: [0.1, 0.5] } // Adjusted for window scroll
-    );
+      });
+
+      if (visibleSection) {
+        setActiveTab(visibleSection);
+      }
+    };
+
+    const containerObserver = new IntersectionObserver(handleIntersect, {
+      root: mainContainer,
+      threshold: [0.2, 0.5],
+    });
+
+    const windowObserver = new IntersectionObserver(handleIntersect, {
+      root: null,
+      threshold: [0.2, 0.5],
+    });
 
     NAV_ITEMS.forEach((item) => {
       const el = document.getElementById(item.id);
-      if (el) observer.observe(el);
+      if (el) {
+        containerObserver.observe(el);
+        windowObserver.observe(el);
+      }
     });
 
-    return () => observer.disconnect();
+    return () => {
+      containerObserver.disconnect();
+      windowObserver.disconnect();
+    };
   }, []);
 
   // --- GALLERY MODAL KEYBOARD NAVIGATION ---
@@ -346,7 +365,7 @@ export default function Portfolio() {
             {PROFILE_DATA.surname}
           </span>
         </span>
-        
+
         <div className="flex items-center gap-1.5">
           {/* MOBILE THEME TOGGLE BUTTON */}
           <button
@@ -597,7 +616,7 @@ export default function Portfolio() {
         {/* HERO / ABOUT SECTION */}
         <section
           id="about"
-          className="relative min-h-[calc(100dvh-56px)] md:min-h-[100dvh] flex items-center justify-start overflow-hidden border-b border-slate-200 dark:border-slate-800/80 px-5 sm:px-12 md:px-16 py-12 sm:py-16"
+          className="relative min-h-[calc(100dvh-56px)] md:min-h-[100dvh] flex items-center justify-start overflow-hidden border-b border-slate-200 dark:border-slate-800/80 px-5 sm:px-12 md:px-16 py-12 sm:py-16 w-full"
         >
           <div className="absolute inset-0 z-0">
             <Image
@@ -617,7 +636,7 @@ export default function Portfolio() {
             />
           </div>
 
-          <div className="relative z-10 max-w-3xl space-y-6 text-white my-auto pt-6 md:pt-0">
+          <div className="relative z-10 max-w-6xl w-full mx-auto space-y-6 text-white my-auto pt-6 md:pt-0">
             {/* MOBILE ONLY AVATAR IN FRONT */}
             <div className="md:hidden">
               <div
@@ -730,211 +749,242 @@ export default function Portfolio() {
         {/* EXPERIENCE SECTION */}
         <section
           id="experience"
-          className="p-5 sm:p-12 md:p-16 max-w-4xl space-y-6 sm:space-y-8 border-b border-slate-200 dark:border-slate-800/80"
+          className="p-5 sm:p-12 md:p-16 min-h-[calc(100dvh-56px)] md:min-h-screen flex flex-col justify-center w-full border-b border-slate-200 dark:border-slate-800/80"
         >
-          <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
-            Experience
-          </h2>
+          <div className="max-w-6xl w-full mx-auto space-y-6 sm:space-y-8">
+            <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
+              Experience
+            </h2>
 
-          <div className="space-y-4 sm:space-y-6">
-            {EXPERIENCES.map((exp, idx) => (
-              <div
-                key={idx}
-                className={`p-5 sm:p-6 rounded-2xl border shadow-sm space-y-2 transition-all ${
-                  darkMode
-                    ? "bg-slate-900/60 border-slate-800 hover:border-emerald-500/50"
-                    : "bg-white border-slate-200 hover:border-sky-300"
-                }`}
-              >
+            <div className="space-y-4 sm:space-y-6">
+              {EXPERIENCES.map((exp, idx) => (
                 <div
-                  className={`flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs font-mono font-bold ${
-                    darkMode ? "text-emerald-400" : "text-sky-500"
+                  key={idx}
+                  className={`p-6 sm:p-8 rounded-2xl border shadow-sm space-y-3 transition-all ${
+                    darkMode
+                      ? "bg-slate-900/60 border-slate-800 hover:border-emerald-500/50"
+                      : "bg-white border-slate-200 hover:border-sky-300"
                   }`}
                 >
-                  <span>{exp.company}</span>
-                  <span className="text-slate-400 font-normal sm:font-bold">{exp.period}</span>
+                  <div
+                    className={`flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs font-mono font-bold ${
+                      darkMode ? "text-emerald-400" : "text-sky-500"
+                    }`}
+                  >
+                    <span className="text-sm">{exp.company}</span>
+                    <span className="text-slate-400 font-normal sm:font-bold">{exp.period}</span>
+                  </div>
+                  <h3 className="font-bold text-lg sm:text-xl">{exp.role}</h3>
+                  <p
+                    className={`text-sm sm:text-base leading-relaxed ${
+                      darkMode ? "text-slate-400" : "text-slate-600"
+                    }`}
+                  >
+                    {exp.description}
+                  </p>
                 </div>
-                <h3 className="font-bold text-base sm:text-lg">{exp.role}</h3>
-                <p
-                  className={`text-sm leading-relaxed ${
-                    darkMode ? "text-slate-400" : "text-slate-600"
-                  }`}
-                >
-                  {exp.description}
-                </p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 
         {/* PORTFOLIO SECTION */}
         <section
           id="portfolio"
-          className="p-5 sm:p-12 md:p-16 space-y-6 sm:space-y-8 border-b border-slate-200 dark:border-slate-800/80"
+          className="p-5 sm:p-12 md:p-16 min-h-[calc(100dvh-56px)] md:min-h-screen flex flex-col justify-center w-full border-b border-slate-200 dark:border-slate-800/80"
         >
-          <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
-            Portfolio
-          </h2>
+          <div className="max-w-6xl w-full mx-auto space-y-6 sm:space-y-8">
+            <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
+              Portfolio
+            </h2>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
-            {galleryImages.map((imgPath, index) => (
-              <div
-                key={index}
-                onClick={() => setSelectedImgIndex(index)}
-                className={`relative aspect-square rounded-2xl overflow-hidden border cursor-pointer group shadow-sm active:scale-95 transition-transform ${
-                  darkMode ? "border-slate-800 bg-slate-900" : "border-slate-200 bg-slate-100"
-                }`}
-              >
-                <Image
-                  src={imgPath}
-                  alt={`Project ${index + 1}`}
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <Maximize2 className="w-6 h-6 text-white" />
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
+              {galleryImages.map((imgPath, index) => (
+                <div
+                  key={index}
+                  onClick={() => setSelectedImgIndex(index)}
+                  className={`relative aspect-square rounded-2xl overflow-hidden border cursor-pointer group shadow-sm active:scale-95 transition-transform ${
+                    darkMode ? "border-slate-800 bg-slate-900" : "border-slate-200 bg-slate-100"
+                  }`}
+                >
+                  <Image
+                    src={imgPath}
+                    alt={`Project ${index + 1}`}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Maximize2 className="w-6 h-6 text-white" />
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 
         {/* SKILLS SECTION */}
         <section
           id="skills"
-          className="p-5 sm:p-12 md:p-16 max-w-5xl space-y-6 sm:space-y-8 border-b border-slate-200 dark:border-slate-800/80"
+          className="p-5 sm:p-12 md:p-16 min-h-[calc(100dvh-56px)] md:min-h-screen flex flex-col justify-center w-full border-b border-slate-200 dark:border-slate-800/80"
         >
-          <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
-            Skills
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {SKILL_CATEGORIES.map((cat, idx) => {
-              const Icon = cat.icon;
-              return (
-                <div
-                  key={idx}
-                  className={`p-5 sm:p-6 rounded-2xl border shadow-sm space-y-3 transition-all ${
-                    darkMode
-                      ? "bg-slate-900/60 border-slate-800 hover:border-emerald-500/50"
-                      : "bg-white border-slate-200 hover:border-sky-300"
-                  }`}
-                >
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    darkMode ? "bg-emerald-500/10 text-emerald-400" : "bg-sky-500/10 text-sky-500"
-                  }`}>
-                    <Icon className="w-5 h-5" />
+          <div className="max-w-6xl w-full mx-auto space-y-6 sm:space-y-8">
+            <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
+              Skills
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {SKILL_CATEGORIES.map((cat, idx) => {
+                const Icon = cat.icon;
+                return (
+                  <div
+                    key={idx}
+                    className={`p-6 sm:p-8 rounded-2xl border shadow-sm space-y-4 ${
+                      darkMode ? "bg-slate-900/60 border-slate-800" : "bg-white border-slate-200"
+                    }`}
+                  >
+                    <div
+                      className={`p-3 rounded-xl w-fit ${
+                        darkMode ? "bg-emerald-500/10 text-emerald-400" : "bg-sky-500/10 text-sky-500"
+                      }`}
+                    >
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <h3 className="font-bold text-lg sm:text-xl">{cat.title}</h3>
+                    <p
+                      className={`text-sm leading-relaxed ${
+                        darkMode ? "text-slate-400" : "text-slate-600"
+                      }`}
+                    >
+                      {cat.skills}
+                    </p>
                   </div>
-                  <h3 className="font-bold text-base">{cat.title}</h3>
-                  <p className={`text-sm leading-relaxed ${darkMode ? "text-slate-400" : "text-slate-600"}`}>
-                    {cat.skills}
-                  </p>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </section>
 
         {/* AWARDS SECTION */}
         <section
           id="awards"
-          className="p-5 sm:p-12 md:p-16 max-w-4xl space-y-6 sm:space-y-8 border-b border-slate-200 dark:border-slate-800/80"
+          className="p-5 sm:p-12 md:p-16 min-h-[calc(100dvh-56px)] md:min-h-screen flex flex-col justify-center w-full border-b border-slate-200 dark:border-slate-800/80"
         >
-          <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
-            Awards
-          </h2>
-          <div className="space-y-4">
-            {AWARDS.map((award, idx) => (
-              <div
-                key={idx}
-                className={`p-4 sm:p-5 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-sm transition-all ${
-                  darkMode
-                    ? "bg-slate-900/60 border-slate-800 hover:border-emerald-500/50"
-                    : "bg-white border-slate-200 hover:border-sky-300"
-                }`}
-              >
-                <div>
-                  <h3 className="font-bold text-base">{award.title}</h3>
-                  <p className={`text-sm ${darkMode ? "text-slate-400" : "text-slate-600"}`}>
+          <div className="max-w-6xl w-full mx-auto space-y-6 sm:space-y-8">
+            <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
+              Awards
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {AWARDS.map((award, idx) => (
+                <div
+                  key={idx}
+                  className={`p-6 sm:p-8 rounded-2xl border shadow-sm space-y-2 ${
+                    darkMode ? "bg-slate-900/60 border-slate-800" : "bg-white border-slate-200"
+                  }`}
+                >
+                  <span
+                    className={`text-xs font-mono font-bold ${
+                      darkMode ? "text-emerald-400" : "text-sky-500"
+                    }`}
+                  >
+                    {award.year}
+                  </span>
+                  <h3 className="font-bold text-lg sm:text-xl">{award.title}</h3>
+                  <p
+                    className={`text-sm ${
+                      darkMode ? "text-slate-400" : "text-slate-600"
+                    }`}
+                  >
                     {award.organization}
                   </p>
                 </div>
-                <div className={`px-3 py-1 rounded-full text-xs font-bold w-fit ${
-                  darkMode ? "bg-emerald-500/10 text-emerald-400" : "bg-sky-500/10 text-sky-500"
-                }`}>
-                  {award.year}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 
         {/* CONTACT SECTION */}
         <section
           id="contact"
-          className="p-5 sm:p-12 md:p-16 max-w-3xl space-y-6 sm:space-y-8 pb-24"
+          className="p-5 sm:p-12 md:p-16 min-h-[calc(100dvh-56px)] md:min-h-screen flex flex-col justify-center w-full"
         >
-          <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
-            Contact
-          </h2>
-          <form onSubmit={handleFormSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <input
-                type="text"
-                placeholder="Name"
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className={`w-full px-4 py-3.5 rounded-xl border outline-none transition-all ${
-                  darkMode
-                    ? "bg-slate-900/60 border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 placeholder:text-slate-500"
-                    : "bg-slate-50 border-slate-200 focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 placeholder:text-slate-400"
+          <div className="max-w-2xl w-full mx-auto space-y-6 sm:space-y-8">
+            <h2 className="text-xl sm:text-3xl font-extrabold uppercase tracking-wider">
+              Contact
+            </h2>
+
+            <form onSubmit={handleFormSubmit} className="space-y-4">
+              <div>
+                <input
+                  type="text"
+                  placeholder="Your Name"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className={`w-full p-4 rounded-xl border text-sm outline-none transition-colors ${
+                    darkMode
+                      ? "bg-slate-900/80 border-slate-800 text-white focus:border-emerald-500"
+                      : "bg-slate-50 border-slate-200 text-slate-900 focus:border-sky-500"
+                  }`}
+                />
+              </div>
+
+              <div>
+                <input
+                  type="email"
+                  placeholder="Your Email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className={`w-full p-4 rounded-xl border text-sm outline-none transition-colors ${
+                    darkMode
+                      ? "bg-slate-900/80 border-slate-800 text-white focus:border-emerald-500"
+                      : "bg-slate-50 border-slate-200 text-slate-900 focus:border-sky-500"
+                  }`}
+                />
+              </div>
+
+              <div>
+                <textarea
+                  rows={5}
+                  placeholder="Your Message"
+                  required
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  className={`w-full p-4 rounded-xl border text-sm outline-none transition-colors resize-none ${
+                    darkMode
+                      ? "bg-slate-900/80 border-slate-800 text-white focus:border-emerald-500"
+                      : "bg-slate-50 border-slate-200 text-slate-900 focus:border-sky-500"
+                  }`}
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`w-full flex items-center justify-center space-x-2 p-4 rounded-xl font-bold text-sm text-white transition-all active:scale-95 ${
+                  darkMode ? "bg-emerald-500 hover:bg-emerald-600" : "bg-sky-500 hover:bg-sky-600"
                 }`}
-              />
-              <input
-                type="email"
-                placeholder="Email"
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className={`w-full px-4 py-3.5 rounded-xl border outline-none transition-all ${
-                  darkMode
-                    ? "bg-slate-900/60 border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 placeholder:text-slate-500"
-                    : "bg-slate-50 border-slate-200 focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 placeholder:text-slate-400"
-                }`}
-              />
-            </div>
-            <textarea
-              placeholder="Your Message..."
-              required
-              rows={5}
-              value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              className={`w-full px-4 py-3.5 rounded-xl border outline-none resize-none transition-all ${
-                darkMode
-                  ? "bg-slate-900/60 border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 placeholder:text-slate-500"
-                  : "bg-slate-50 border-slate-200 focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 placeholder:text-slate-400"
-              }`}
-            />
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className={`w-full sm:w-auto inline-flex items-center justify-center space-x-2 text-white font-bold uppercase tracking-wider px-8 py-4 rounded-xl shadow-lg transition-all active:scale-95 disabled:opacity-70 ${
-                darkMode
-                  ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/25"
-                  : "bg-sky-500 hover:bg-sky-600 shadow-sky-500/25"
-              }`}
-            >
-              {isSubmitting ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : formSubmitted ? (
-                <CheckCircle2 className="w-5 h-5" />
-              ) : (
-                <Send className="w-5 h-5" />
+              >
+                {isSubmitting ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    <span>Send Message</span>
+                  </>
+                )}
+              </button>
+
+              {formSubmitted && (
+                <div className="flex items-center space-x-2 text-emerald-500 text-sm font-semibold">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Message sent successfully!</span>
+                </div>
               )}
-              <span>{formSubmitted ? "Sent!" : "Send Message"}</span>
-            </button>
-          </form>
+            </form>
+          </div>
         </section>
       </main>
 
@@ -945,36 +995,44 @@ export default function Portfolio() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-sm"
+            onClick={() => setSelectedImgIndex(null)}
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4"
           >
             <button
               onClick={() => setSelectedImgIndex(null)}
-              className="absolute top-6 right-6 z-50 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
+              className="absolute top-6 right-6 p-3 rounded-full bg-slate-800/80 text-white hover:bg-slate-700"
             >
               <X className="w-6 h-6" />
             </button>
 
             <button
-              onClick={handlePrevImage}
-              className="absolute left-4 md:left-12 z-50 p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                handlePrevImage();
+              }}
+              className="absolute left-6 p-3 rounded-full bg-slate-800/80 text-white hover:bg-slate-700"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
 
-            <div className="relative w-full max-w-4xl max-h-[85vh] aspect-video md:aspect-auto md:h-[80vh] mx-4">
+            <div
+              className="relative max-w-4xl max-h-[85vh] w-full h-full aspect-square"
+              onClick={(e) => e.stopPropagation()}
+            >
               <Image
                 src={galleryImages[selectedImgIndex]}
-                alt={`Expanded Project ${selectedImgIndex + 1}`}
+                alt="Selected Project"
                 fill
                 className="object-contain"
-                sizes="100vw"
-                priority
               />
             </div>
 
             <button
-              onClick={handleNextImage}
-              className="absolute right-4 md:right-12 z-50 p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleNextImage();
+              }}
+              className="absolute right-6 p-3 rounded-full bg-slate-800/80 text-white hover:bg-slate-700"
             >
               <ChevronRight className="w-6 h-6" />
             </button>
