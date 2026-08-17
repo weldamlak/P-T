@@ -200,6 +200,7 @@ const PROFILE_DATA = {
   role: "Student & Aspiring Software Developer",
   bio: "I am passionate about technology, programming and building useful digital solutions that can make a positive difference in my community.",
   avatar: "/profile3.jpg",
+  cvPath: "cv.pdf",
   socials: {
     linkedin: "https://www.linkedin.com/in/zewdu-taye-54b1b8366",
     github: "https://github.com/Zewdutaye",
