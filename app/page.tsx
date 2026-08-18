@@ -146,7 +146,7 @@ const PROJECTS_LIST = [
   },
   {
     id: "04",
-    title: "School Website",
+    title: "School Website Project",
     description:
       "A responsive website concept designed to provide students and teachers with useful school information.",
     tags: ["HTML", "CSS"],
