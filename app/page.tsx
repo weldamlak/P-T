@@ -195,10 +195,10 @@ const SKILLS_LIST = [
 
 // --- CONFIGURATION & DATA ---
 const PROFILE_DATA = {
-  name: "ZEWDU",
-  surname: "Taye",
+  name: "Zewdu.T",
+  surname: "Birhanu",
   role: "Student & Aspiring Software Developer",
-  bio: "I am passionate about technology, programming and building useful digital solutions that can make a positive difference in my community.",
+  bio: "I am a Grade 12 student passionate about technology, programming, artificial intelligence, and building meaningful digital solutions that solve real-world problems.",
   avatar: "/profile3.jpg",
   cvPath: "cv.pdf",
   socials: {
@@ -913,13 +913,13 @@ export default function Portfolio() {
                     }`}
                 >
                   <p>
-                    I am a Grade 12 student from Ethiopia with a strong interest in computer science, programming, and technology.
+                   I'm a Grade 12 student from Ethiopia studying in the Natural Science stream. My curiosity for how things work led me to computer science, where I discovered a deep passion for programming, artificial intelligence, and web development.
                   </p>
                   <p>
-                    I enjoy learning how technology works and creating projects that solve real-world problems. I have explored programming with Python, web development, and software projects.
+                    I enjoy solving problems with clean code, exploring STEM concepts, and building projects that combine creativity with logic. My goal is to use technology to create meaningful solutions — from educational tools for Ethiopian students to intelligent systems that improve everyday life.
                   </p>
                   <p>
-                    My long-term goal is to study computer science and become a skilled software developer who creates meaningful solutions for people and communities.
+                   When I'm not coding, I'm learning about AI, contributing to technology communities, and preparing myself for a future in software engineering and computer science.
                   </p>
                 </div>
 
