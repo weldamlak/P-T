@@ -57,7 +57,7 @@ const ALL_CERTIFICATES = [
     organization: "Ministry of Education",
     isFeatured: true,
   },
-  ...Array.from({ length: 22 }, (_, i) => ({
+  ...Array.from({ length: 23 }, (_, i) => ({
     id: `c${i + 1}`,
     title: `Certificate ${i + 1}`,
     image: `/certificates/c${i + 1}.jpg`,
