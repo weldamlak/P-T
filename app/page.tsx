@@ -1128,7 +1128,7 @@ export default function Portfolio() {
                 MY RECENT WORK
               </span>
               <h2 className="text-2xl sm:text-4xl font-extrabold uppercase tracking-wider">
-                Featured Projects
+                Featured Project
               </h2>
             </div>
 
