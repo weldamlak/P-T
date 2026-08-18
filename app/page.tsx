@@ -913,13 +913,13 @@ export default function Portfolio() {
                     }`}
                 >
                   <p>
-                   I'm a Grade 12 student from Ethiopia studying in the Natural Science stream. My curiosity for how things work led me to computer science, where I discovered a deep passion for programming, artificial intelligence, and web development.
+                    I'm a Grade 12 student from Ethiopia studying in the Natural Science stream. My curiosity for how things work led me to computer science, where I discovered a deep passion for programming, artificial intelligence, and web development.
                   </p>
                   <p>
                     I enjoy solving problems with clean code, exploring STEM concepts, and building projects that combine creativity with logic. My goal is to use technology to create meaningful solutions — from educational tools for Ethiopian students to intelligent systems that improve everyday life.
                   </p>
                   <p>
-                   When I'm not coding, I'm learning about AI, contributing to technology communities, and preparing myself for a future in software engineering and computer science.
+                    When I'm not coding, I'm learning about AI, contributing to technology communities, and preparing myself for a future in software engineering and computer science.
                   </p>
                 </div>
 
@@ -1560,9 +1560,7 @@ export default function Portfolio() {
 
                 {/* INFO CARD */}
                 <div
-                  className={`p-6 sm:p-8 rounded-2xl border shadow-sm space-y-6 ${darkMode
-                    ? "bg-slate-900/60 border-slate-800"
-                    : "bg-white border-slate-200"
+                  className={`p-6 sm:p-8 rounded-2xl border shadow-sm space-y-6 ${darkMode ? "bg-slate-900/60 border-slate-800" : "bg-white border-slate-200"
                     }`}
                 >
                   <h3 className="text-xs font-mono font-bold tracking-wider uppercase text-slate-600 dark:text-slate-400">
@@ -1573,9 +1571,7 @@ export default function Portfolio() {
                     {/* LOCATION */}
                     <div className="flex items-start space-x-4">
                       <div
-                        className={`p-3 rounded-xl border shrink-0 ${darkMode
-                          ? "bg-slate-950 border-slate-800 text-emerald-400"
-                          : "bg-slate-50 border-slate-200 text-sky-600"
+                        className={`p-3 rounded-xl border shrink-0 ${darkMode ? "bg-slate-950 border-slate-800 text-emerald-400" : "bg-slate-50 border-slate-200 text-sky-600"
                           }`}
                       >
                         <MapPin className="w-5 h-5" />
@@ -1591,9 +1587,7 @@ export default function Portfolio() {
                     {/* EMAIL */}
                     <div className="flex items-start space-x-4">
                       <div
-                        className={`p-3 rounded-xl border shrink-0 ${darkMode
-                          ? "bg-slate-950 border-slate-800 text-emerald-400"
-                          : "bg-slate-50 border-slate-200 text-sky-600"
+                        className={`p-3 rounded-xl border shrink-0 ${darkMode ? "bg-slate-950 border-slate-800 text-emerald-400" : "bg-slate-50 border-slate-200 text-sky-600"
                           }`}
                       >
                         <Mail className="w-5 h-5" />
@@ -1601,10 +1595,10 @@ export default function Portfolio() {
                       <div className="overflow-hidden">
                         <span className="text-xs font-mono text-slate-500 font-semibold block">Email</span>
                         <a
-                          href="mailto:zidoscar16@gmail.com"
+                          href="mailto:zewdu.t.birhanu16@gmail.com"
                           className="font-bold text-sm sm:text-base text-slate-950 dark:text-slate-200 hover:underline break-all"
                         >
-                          zidoscar16@gmail.com
+                          zewdu.t.birhanu16@gmail.com
                         </a>
                       </div>
                     </div>
@@ -1612,9 +1606,7 @@ export default function Portfolio() {
                     {/* PHONE / WHATSAPP */}
                     <div className="flex items-start space-x-4">
                       <div
-                        className={`p-3 rounded-xl border shrink-0 ${darkMode
-                          ? "bg-slate-950 border-slate-800 text-emerald-400"
-                          : "bg-slate-50 border-slate-200 text-sky-600"
+                        className={`p-3 rounded-xl border shrink-0 ${darkMode ? "bg-slate-950 border-slate-800 text-emerald-400" : "bg-slate-50 border-slate-200 text-sky-600"
                           }`}
                       >
                         <Phone className="w-5 h-5" />
@@ -1645,8 +1637,8 @@ export default function Portfolio() {
                         rel="noreferrer"
                         aria-label="Facebook"
                         className={`p-3 rounded-xl border transition-all duration-300 hover:scale-105 active:scale-95 ${darkMode
-                          ? "bg-slate-950 border-slate-800 text-slate-300 hover:border-emerald-500/50 hover:text-emerald-400"
-                          : "bg-slate-50 border-slate-200 text-slate-900 hover:border-sky-500/50 hover:text-sky-600"
+                            ? "bg-slate-950 border-slate-800 text-slate-300 hover:border-emerald-500/50 hover:text-emerald-400"
+                            : "bg-slate-50 border-slate-200 text-slate-900 hover:border-sky-500/50 hover:text-sky-600"
                           }`}
                       >
                         <FaFacebook className="w-5 h-5" />
@@ -1657,8 +1649,8 @@ export default function Portfolio() {
                         rel="noreferrer"
                         aria-label="GitHub"
                         className={`p-3 rounded-xl border transition-all duration-300 hover:scale-105 active:scale-95 ${darkMode
-                          ? "bg-slate-950 border-slate-800 text-slate-300 hover:border-emerald-500/50 hover:text-emerald-400"
-                          : "bg-slate-50 border-slate-200 text-slate-900 hover:border-sky-500/50 hover:text-sky-600"
+                            ? "bg-slate-950 border-slate-800 text-slate-300 hover:border-emerald-500/50 hover:text-emerald-400"
+                            : "bg-slate-50 border-slate-200 text-slate-900 hover:border-sky-500/50 hover:text-sky-600"
                           }`}
                       >
                         <FaGithub className="w-5 h-5" />
@@ -1669,8 +1661,8 @@ export default function Portfolio() {
                         rel="noreferrer"
                         aria-label="LinkedIn"
                         className={`p-3 rounded-xl border transition-all duration-300 hover:scale-105 active:scale-95 ${darkMode
-                          ? "bg-slate-950 border-slate-800 text-slate-300 hover:border-emerald-500/50 hover:text-emerald-400"
-                          : "bg-slate-50 border-slate-200 text-slate-900 hover:border-sky-500/50 hover:text-sky-600"
+                            ? "bg-slate-950 border-slate-800 text-slate-300 hover:border-emerald-500/50 hover:text-emerald-400"
+                            : "bg-slate-50 border-slate-200 text-slate-900 hover:border-sky-500/50 hover:text-sky-600"
                           }`}
                       >
                         <FaLinkedin className="w-5 h-5" />
@@ -1684,12 +1676,14 @@ export default function Portfolio() {
               {/* RIGHT: CONTACT FORM */}
               <div className="lg:col-span-7">
                 <form
-                  onSubmit={handleFormSubmit}
-                  className={`p-6 sm:p-8 rounded-2xl border shadow-sm space-y-5 ${darkMode
-                    ? "bg-slate-900/60 border-slate-800"
-                    : "bg-white border-slate-200"
+                  action="https://api.web3forms.com/submit"
+                  method="POST"
+                  className={`p-6 sm:p-8 rounded-2xl border shadow-sm space-y-5 ${darkMode ? "bg-slate-900/60 border-slate-800" : "bg-white border-slate-200"
                     }`}
                 >
+                  {/* Web3Forms Access Key */}
+                  <input type="hidden" name="access_key" value="4ba11614-c621-4cf1-813d-2bbc41b3235d" />
+
                   <h3 className="text-xs font-mono font-bold tracking-wider uppercase text-slate-600 dark:text-slate-400">
                     Send a Message
                   </h3>
@@ -1698,13 +1692,12 @@ export default function Portfolio() {
                     <div>
                       <input
                         type="text"
+                        name="name"
                         placeholder="Your Name"
                         required
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         className={`w-full p-4 rounded-xl border text-sm outline-none transition-colors ${darkMode
-                          ? "bg-slate-950 border-slate-800 text-white focus:border-emerald-500"
-                          : "bg-slate-50 border-slate-300 text-slate-950 placeholder:text-slate-500 focus:border-sky-600"
+                            ? "bg-slate-950 border-slate-800 text-white focus:border-emerald-500"
+                            : "bg-slate-50 border-slate-300 text-slate-950 placeholder:text-slate-500 focus:border-sky-600"
                           }`}
                       />
                     </div>
@@ -1712,27 +1705,25 @@ export default function Portfolio() {
                     <div>
                       <input
                         type="email"
+                        name="email"
                         placeholder="Your Email"
                         required
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         className={`w-full p-4 rounded-xl border text-sm outline-none transition-colors ${darkMode
-                          ? "bg-slate-950 border-slate-800 text-white focus:border-emerald-500"
-                          : "bg-slate-50 border-slate-300 text-slate-950 placeholder:text-slate-500 focus:border-sky-600"
+                            ? "bg-slate-950 border-slate-800 text-white focus:border-emerald-500"
+                            : "bg-slate-50 border-slate-300 text-slate-950 placeholder:text-slate-500 focus:border-sky-600"
                           }`}
                       />
                     </div>
 
                     <div>
                       <textarea
+                        name="message"
                         rows={5}
                         placeholder="Your Message"
                         required
-                        value={formData.message}
-                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         className={`w-full p-4 rounded-xl border text-sm outline-none transition-colors resize-none ${darkMode
-                          ? "bg-slate-950 border-slate-800 text-white focus:border-emerald-500"
-                          : "bg-slate-50 border-slate-300 text-slate-950 placeholder:text-slate-500 focus:border-sky-600"
+                            ? "bg-slate-950 border-slate-800 text-white focus:border-emerald-500"
+                            : "bg-slate-50 border-slate-300 text-slate-950 placeholder:text-slate-500 focus:border-sky-600"
                           }`}
                       />
                     </div>
@@ -1740,28 +1731,14 @@ export default function Portfolio() {
 
                   <button
                     type="submit"
-                    disabled={isSubmitting}
                     className={`w-full flex items-center justify-center space-x-2 p-4 rounded-xl font-bold text-sm text-white transition-all active:scale-95 shadow-lg ${darkMode
-                      ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20"
-                      : "bg-sky-600 hover:bg-sky-700 shadow-sky-600/20"
+                        ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20"
+                        : "bg-sky-600 hover:bg-sky-700 shadow-sky-600/20"
                       }`}
                   >
-                    {isSubmitting ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4" />
-                        <span>Send Message</span>
-                      </>
-                    )}
+                    <Send className="w-4 h-4" />
+                    <span>Send Message</span>
                   </button>
-
-                  {formSubmitted && (
-                    <div className="flex items-center space-x-2 text-emerald-600 text-sm font-semibold pt-1">
-                      <CheckCircle2 className="w-4 h-4" />
-                      <span>Message sent successfully!</span>
-                    </div>
-                  )}
                 </form>
               </div>
 
