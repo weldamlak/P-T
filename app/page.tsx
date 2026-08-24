@@ -762,125 +762,158 @@ export default function Portfolio() {
               sizes="100vw"
             />
             <div
-              className={`absolute inset-0 transition-colors duration-300 ${darkMode
-                ? "bg-gradient-to-t md:bg-gradient-to-r from-slate-950/95 via-slate-950/80 to-slate-950/50 sm:to-transparent"
-                : "bg-gradient-to-t md:bg-gradient-to-r from-slate-900/90 via-slate-900/70 to-slate-900/40 sm:to-transparent"
-                }`}
+              className={`absolute inset-0 transition-colors duration-300 ${
+                darkMode
+                  ? "bg-gradient-to-t md:bg-gradient-to-r from-slate-950/95 via-slate-950/85 to-slate-950/60 sm:to-slate-950/30"
+                  : "bg-gradient-to-t md:bg-gradient-to-r from-slate-900/90 via-slate-900/80 to-slate-900/50 sm:to-slate-900/20"
+              }`}
             />
           </div>
 
-          <div className="relative z-10 max-w-6xl w-full mx-auto space-y-6 text-white my-auto pt-6 md:pt-0">
-            {/* MOBILE ONLY AVATAR IN FRONT */}
-            <div className="md:hidden">
-              <div
-                className={`relative w-28 h-28 rounded-full overflow-hidden border-4 shadow-xl mb-4 ${darkMode ? "border-emerald-500/40" : "border-sky-500/40"
+          {/* MAIN CONTAINER AS A GRID FOR DESKTOP SPLIT */}
+          <div className="relative z-10 max-w-7xl w-full mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 items-center my-auto pt-6 md:pt-0">
+            
+            {/* LEFT COLUMN: TEXT CONTENT */}
+            <div className="md:col-span-7 lg:col-span-8 space-y-6 text-white">
+              {/* MOBILE ONLY AVATAR IN FRONT */}
+              <div className="md:hidden">
+                <div
+                  className={`relative w-28 h-28 rounded-full overflow-hidden border-4 shadow-xl mb-4 ${
+                    darkMode ? "border-emerald-500/40" : "border-sky-500/40"
                   }`}
-              >
-                <Image
-                  src={PROFILE_DATA.avatar}
-                  alt={PROFILE_DATA.name}
-                  fill
-                  className="object-cover"
-                  priority
-                />
+                >
+                  <Image
+                    src={PROFILE_DATA.avatar}
+                    alt={PROFILE_DATA.name}
+                    fill
+                    className="object-cover"
+                    priority
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <h1 className="text-4xl xs:text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight uppercase leading-tight text-slate-100 drop-shadow-md">
+                  {PROFILE_DATA.name}{" "}
+                  <span className={darkMode ? "text-emerald-400 font-black" : "text-sky-400 font-black"}>
+                    {PROFILE_DATA.surname}
+                  </span>
+                </h1>
+                <p
+                  className={`text-xs sm:text-sm font-mono tracking-wider font-bold uppercase drop-shadow ${
+                    darkMode ? "text-emerald-400" : "text-sky-300"
+                  }`}
+                >
+                  {PROFILE_DATA.role}
+                </p>
+              </div>
+
+              <p className="text-slate-200 leading-relaxed text-sm sm:text-base drop-shadow-sm max-w-2xl">
+                {PROFILE_DATA.bio}
+              </p>
+
+              {/* SOCIAL ICONS */}
+              <div className="flex items-center gap-3 pt-1">
+                <a
+                  href={PROFILE_DATA.socials.linkedin}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="LinkedIn"
+                  className={`w-12 h-12 md:w-11 md:h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${
+                    darkMode
+                      ? "hover:bg-emerald-500 hover:border-emerald-500 hover:text-white"
+                      : "hover:bg-sky-500 hover:border-sky-500 hover:text-white"
+                  }`}
+                >
+                  <FaLinkedinIn className="w-5 h-5 md:w-4 md:h-4" />
+                </a>
+                <a
+                  href={PROFILE_DATA.socials.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="GitHub"
+                  className={`w-12 h-12 md:w-11 md:h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${
+                    darkMode
+                      ? "hover:bg-emerald-500 hover:border-emerald-500 hover:text-white"
+                      : "hover:bg-sky-500 hover:border-sky-500 hover:text-white"
+                  }`}
+                >
+                  <FaGithub className="w-5 h-5 md:w-4 md:h-4" />
+                </a>
+                <a
+                  href={PROFILE_DATA.socials.telegram}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Telegram"
+                  className={`w-12 h-12 md:w-11 md:h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${
+                    darkMode
+                      ? "hover:bg-emerald-500 hover:border-emerald-500 hover:text-white"
+                      : "hover:bg-sky-500 hover:border-sky-500 hover:text-white"
+                  }`}
+                >
+                  <FaTelegram className="w-5 h-5 md:w-4 md:h-4" />
+                </a>
+                <a
+                  href="https://wa.me/251930417397"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="WhatsApp"
+                  className={`w-12 h-12 md:w-11 md:h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${
+                    darkMode
+                      ? "hover:bg-emerald-500 hover:border-emerald-500 hover:text-white"
+                      : "hover:bg-sky-500 hover:border-sky-500 hover:text-white"
+                  }`}
+                >
+                  <FaWhatsapp className="w-5 h-5 md:w-4 md:h-4" />
+                </a>
+              </div>
+
+              {/* CTA BUTTONS */}
+              <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <button
+                  onClick={() => scrollToSection("portfolio")}
+                  className={`inline-flex items-center justify-center space-x-2.5 text-white text-sm md:text-xs font-extrabold uppercase tracking-wider px-8 py-4 md:py-3.5 rounded-xl shadow-lg transition-all duration-200 active:scale-95 group ${
+                    darkMode
+                      ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/25"
+                      : "bg-sky-500 hover:bg-sky-600 shadow-sky-500/25"
+                  }`}
+                >
+                  <FolderGit2 className="w-5 h-5 md:w-4 md:h-4 transition-transform group-hover:scale-110" />
+                  <span>View My Projects</span>
+                </button>
+
+                <button
+                  onClick={() => scrollToSection("contact")}
+                  className={`inline-flex items-center justify-center space-x-2 text-sm md:text-xs font-bold uppercase tracking-wider px-8 py-4 md:py-3.5 rounded-xl border backdrop-blur-sm transition-all active:scale-95 ${
+                    darkMode
+                      ? "bg-slate-900/80 border-slate-700/80 text-white hover:bg-slate-800 hover:border-emerald-500/50"
+                      : "bg-white/90 border-slate-200/90 text-slate-800 hover:bg-slate-100 hover:border-sky-500/50"
+                  }`}
+                >
+                  <Mail className="w-5 h-5 md:w-4 md:h-4" />
+                  <span>Contact</span>
+                </button>
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <h1 className="text-4xl xs:text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight uppercase leading-tight text-slate-100 drop-shadow-md">
-                {PROFILE_DATA.name}{" "}
-                <span className={darkMode ? "text-emerald-400 font-black" : "text-sky-400 font-black"}>
-                  {PROFILE_DATA.surname}
-                </span>
-              </h1>
-              <p
-                className={`text-xs sm:text-sm font-mono tracking-wider font-bold uppercase drop-shadow ${darkMode ? "text-emerald-400" : "text-sky-300"
-                  }`}
-              >
-                {PROFILE_DATA.role}
-              </p>
+            {/* RIGHT COLUMN: DESKTOP BODY PROFILE IMAGE */}
+            <div className="hidden md:flex md:col-span-5 lg:col-span-4 relative justify-center items-end h-[500px] lg:h-[580px] pointer-events-none">
+              {/* Optional ambient glow behind the profile cut-out */}
+              <div 
+                className={`absolute w-72 h-72 rounded-full blur-3xl opacity-20 -bottom-10 right-10 ${
+                  darkMode ? "bg-emerald-500" : "bg-sky-500"
+                }`} 
+              />
+              <Image
+                src="/profilebg.jpg"
+                alt={`${PROFILE_DATA.name} Profile Body`}
+                fill
+                className="object-contain object-bottom drop-shadow-2xl z-10 transition-transform duration-500 hover:scale-[1.02]"
+                priority
+                sizes="(max-width: 1024px) 40vw, 30vw"
+              />
             </div>
 
-            <p className="text-slate-200 leading-relaxed text-sm sm:text-base drop-shadow-sm max-w-2xl">
-              {PROFILE_DATA.bio}
-            </p>
-
-            {/* SOCIAL ICONS */}
-            <div className="flex items-center gap-3 pt-1">
-              <a
-                href={PROFILE_DATA.socials.linkedin}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="LinkedIn"
-                className={`w-12 h-12 md:w-11 md:h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${darkMode
-                  ? "hover:bg-emerald-500 hover:border-emerald-500 hover:text-white"
-                  : "hover:bg-sky-500 hover:border-sky-500 hover:text-white"
-                  }`}
-              >
-                <FaLinkedinIn className="w-5 h-5 md:w-4 md:h-4" />
-              </a>
-              <a
-                href={PROFILE_DATA.socials.github}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="GitHub"
-                className={`w-12 h-12 md:w-11 md:h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${darkMode
-                  ? "hover:bg-emerald-500 hover:border-emerald-500 hover:text-white"
-                  : "hover:bg-sky-500 hover:border-sky-500 hover:text-white"
-                  }`}
-              >
-                <FaGithub className="w-5 h-5 md:w-4 md:h-4" />
-              </a>
-              <a
-                href={PROFILE_DATA.socials.telegram}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Telegram"
-                className={`w-12 h-12 md:w-11 md:h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${darkMode
-                  ? "hover:bg-emerald-500 hover:border-emerald-500 hover:text-white"
-                  : "hover:bg-sky-500 hover:border-sky-500 hover:text-white"
-                  }`}
-              >
-                <FaTelegram className="w-5 h-5 md:w-4 md:h-4" />
-              </a>
-              <a
-                href="https://wa.me/251930417397"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="WhatsApp"
-                className={`w-12 h-12 md:w-11 md:h-11 rounded-xl bg-slate-900/70 border border-slate-700/60 text-slate-200 flex items-center justify-center transition-all active:scale-95 shadow-md backdrop-blur-sm ${darkMode
-                  ? "hover:bg-emerald-500 hover:border-emerald-500 hover:text-white"
-                  : "hover:bg-sky-500 hover:border-sky-500 hover:text-white"
-                  }`}
-              >
-                <FaWhatsapp className="w-5 h-5 md:w-4 md:h-4" />
-              </a>
-            </div>
-
-            {/* CTA BUTTONS */}
-            <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              <button
-                onClick={() => scrollToSection("portfolio")}
-                className={`inline-flex items-center justify-center space-x-2.5 text-white text-sm md:text-xs font-extrabold uppercase tracking-wider px-8 py-4 md:py-3.5 rounded-xl shadow-lg transition-all duration-200 active:scale-95 group ${darkMode
-                  ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/25"
-                  : "bg-sky-500 hover:bg-sky-600 shadow-sky-500/25"
-                  }`}
-              >
-                <FolderGit2 className="w-5 h-5 md:w-4 md:h-4 transition-transform group-hover:scale-110" />
-                <span>View My Projects</span>
-              </button>
-
-              <button
-                onClick={() => scrollToSection("contact")}
-                className={`inline-flex items-center justify-center space-x-2 text-sm md:text-xs font-bold uppercase tracking-wider px-8 py-4 md:py-3.5 rounded-xl border backdrop-blur-sm transition-all active:scale-95 ${darkMode
-                  ? "bg-slate-900/80 border-slate-700/80 text-white hover:bg-slate-800 hover:border-emerald-500/50"
-                  : "bg-white/90 border-slate-200/90 text-slate-800 hover:bg-slate-100 hover:border-sky-500/50"
-                  }`}
-              >
-                <Mail className="w-5 h-5 md:w-4 md:h-4" />
-                <span>Contact</span>
-              </button>
-            </div>
           </div>
         </section>
 
