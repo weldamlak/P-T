@@ -199,7 +199,7 @@ const PROFILE_DATA = {
   surname: "Birhanu",
   role: "Student & Aspiring Software Developer",
   bio: "I am a Grade 12 student passionate about technology, programming, artificial intelligence, and building meaningful digital solutions that solve real-world problems.",
-  avatar: "/profile1.jpg",
+  avatar: "/profile01.jpg",
   cvPath: "cv.pdf",
   socials: {
     linkedin: "https://www.linkedin.com/in/zewdu-taye-54b1b8366",
