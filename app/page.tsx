@@ -898,19 +898,19 @@ export default function Portfolio() {
             {/* RIGHT COLUMN: ABSOLUTE BOTTOM-ANCHORED PROFILE IMAGE */}
             <div className="hidden md:block md:col-span-5 lg:col-span-4 relative h-full pointer-events-none">
               <div 
-                className={`absolute w-80 h-80 rounded-full blur-3xl opacity-20 bottom-12 right-12 ${
+                className={`absolute w-96 h-96 rounded-full blur-3xl opacity-20 bottom-12 right-12 ${
                   darkMode ? "bg-emerald-500" : "bg-sky-500"
                 }`} 
               />
-              {/* Image anchored securely to the absolute bottom of the section */}
-              <div className="absolute bottom-0 right-4 lg:right-8 w-[95%] h-[85vh] max-h-[720px] min-h-[500px]">
+              {/* Stretches to full height of the section and pins to the bottom */}
+              <div className="absolute inset-x-0 bottom-0 top-0 w-full h-full">
                 <Image
                   src="/profilebg.jpg"
                   alt={`${PROFILE_DATA.name} Profile Body`}
                   fill
                   className="object-contain object-bottom drop-shadow-2xl transition-transform duration-500 hover:scale-[1.02]"
                   priority
-                  sizes="(max-width: 1024px) 45vw, 35vw"
+                  sizes="(max-width: 1024px) 50vw, 40vw"
                 />
               </div>
             </div>
