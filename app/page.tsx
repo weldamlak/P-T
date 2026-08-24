@@ -746,11 +746,10 @@ export default function Portfolio() {
         ref={mainContainerRef}
         id="main-content"
         className="flex-1 h-full min-h-[100dvh] md:min-h-0 overflow-y-auto pt-[56px] md:pt-0 scroll-smooth w-full"
-      >
-        {/* HERO / ABOUT SECTION */}
+      >{/* HERO / ABOUT SECTION */}
         <section
           id="about"
-          className="relative min-h-[calc(100dvh-56px)] md:min-h-[100dvh] flex items-center justify-start overflow-hidden border-b border-slate-200 dark:border-slate-800/80 px-5 sm:px-12 md:px-16 py-12 sm:py-16 w-full"
+          className="relative h-auto md:h-[calc(100vh-56px)] min-h-[600px] flex items-center justify-start overflow-hidden border-b border-slate-200 dark:border-slate-800/80 px-5 sm:px-12 md:px-16 py-12 md:py-0 w-full"
         >
           <div className="absolute inset-0 z-0">
             <Image
@@ -771,10 +770,10 @@ export default function Portfolio() {
           </div>
 
           {/* MAIN CONTAINER AS A GRID FOR DESKTOP SPLIT */}
-          <div className="relative z-10 max-w-7xl w-full mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 items-center my-auto pt-6 md:pt-0">
+          <div className="relative z-10 max-w-7xl w-full mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 items-center py-6 md:py-0">
             
             {/* LEFT COLUMN: TEXT CONTENT */}
-            <div className="md:col-span-7 lg:col-span-8 space-y-6 text-white">
+            <div className="md:col-span-7 lg:col-span-8 space-y-6 text-white z-10">
               {/* MOBILE ONLY AVATAR IN FRONT */}
               <div className="md:hidden">
                 <div
@@ -896,22 +895,24 @@ export default function Portfolio() {
               </div>
             </div>
 
-            {/* RIGHT COLUMN: DESKTOP BODY PROFILE IMAGE */}
-            <div className="hidden md:flex md:col-span-5 lg:col-span-4 relative justify-center items-end h-[500px] lg:h-[580px] pointer-events-none">
-              {/* Optional ambient glow behind the profile cut-out */}
+            {/* RIGHT COLUMN: ABSOLUTE BOTTOM-ANCHORED PROFILE IMAGE */}
+            <div className="hidden md:block md:col-span-5 lg:col-span-4 relative h-full pointer-events-none">
               <div 
-                className={`absolute w-72 h-72 rounded-full blur-3xl opacity-20 -bottom-10 right-10 ${
+                className={`absolute w-80 h-80 rounded-full blur-3xl opacity-20 bottom-12 right-12 ${
                   darkMode ? "bg-emerald-500" : "bg-sky-500"
                 }`} 
               />
-              <Image
-                src="/profilebg.jpg"
-                alt={`${PROFILE_DATA.name} Profile Body`}
-                fill
-                className="object-contain object-bottom drop-shadow-2xl z-10 transition-transform duration-500 hover:scale-[1.02]"
-                priority
-                sizes="(max-width: 1024px) 40vw, 30vw"
-              />
+              {/* Image anchored securely to the absolute bottom of the section */}
+              <div className="absolute bottom-0 right-4 lg:right-8 w-[95%] h-[85vh] max-h-[720px] min-h-[500px]">
+                <Image
+                  src="/profilebg.jpg"
+                  alt={`${PROFILE_DATA.name} Profile Body`}
+                  fill
+                  className="object-contain object-bottom drop-shadow-2xl transition-transform duration-500 hover:scale-[1.02]"
+                  priority
+                  sizes="(max-width: 1024px) 45vw, 35vw"
+                />
+              </div>
             </div>
 
           </div>
