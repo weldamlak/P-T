@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { FaLinkedinIn, FaGithub, FaTelegram, FaWhatsapp } from 'react-icons/fa';
 import { FolderGit2, Download } from 'lucide-react';
 
+export type NavTab = "about" | "portfolio" | "about-me" | "experience" | "skills" | "awards" | "contact";
+
 interface ProfileData {
   name?: string;
   surname?: string;
@@ -18,10 +20,11 @@ interface ProfileData {
   cvPath?: string;
   [key: string]: any;
 }
+
 interface AboutSectionProps {
   darkMode: boolean;
   profileData: ProfileData;
-  scrollToSection: (sectionId: any) => void; 
+  scrollToSection: (sectionId: NavTab | string) => void;
 }
 
 export default function AboutSection({ darkMode, profileData, scrollToSection }: AboutSectionProps) {
