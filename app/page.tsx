@@ -354,10 +354,9 @@ export default function Portfolio() {
     },
     [darkMode]
   );
-
-  // --- PROGRAMMATIC SCROLLING TO PREVENT TAB FLICKER ---
-  const scrollToSection = useCallback((id: NavTab) => {
-    setActiveTab(id);
+// --- PROGRAMMATIC SCROLLING TO PREVENT TAB FLICKER ---
+  const scrollToSection = useCallback((id: string) => {
+    setActiveTab(id as NavTab);
     setMobileMenuOpen(false);
     isProgrammaticScroll.current = true;
 
@@ -370,10 +369,6 @@ export default function Portfolio() {
       isProgrammaticScroll.current = false;
     }, 800);
   }, []);
-
-  useEffect(() => {
-    document.body.style.overflow = mobileMenuOpen ? "hidden" : "unset";
-  }, [mobileMenuOpen]);
 
   // --- ACCURATE DUAL INTERSECTION OBSERVER ---
   useEffect(() => {
