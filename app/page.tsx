@@ -4,7 +4,6 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Analytics } from "@vercel/analytics/next";
-import AboutSection from './components/AboutSection';
 import {
   Star,
   Phone,
