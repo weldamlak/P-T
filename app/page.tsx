@@ -742,12 +742,13 @@ export default function Portfolio() {
         id="main-content"
         className="flex-1 h-full min-h-[100dvh] md:min-h-0 overflow-y-auto pt-[56px] md:pt-0 scroll-smooth w-full"
       >
-        {/* HERO / ABOUT SECTION */}
-        <AboutSection 
-          darkMode={darkMode} 
-          profileData={PROFILE_DATA} 
-          scrollToSection={scrollToSection} 
-        />
+        
+       {/* NEW: ABOUT COMPANY SECTION */}
+<AboutSection
+  title="About me"
+  description="We specialize in building modern web applications."
+/>
+        
 
         {/* EDUCATION & EXPERIENCE SECTION */}
         <section
